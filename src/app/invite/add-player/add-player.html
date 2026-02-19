@@ -1,9 +1,9 @@
-<div class="p-6">
+<div class="p-6 bg-white border border-blue-100 shadow-xl rounded-xl">
   <!-- Header -->
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-xl font-bold text-gray-800">Add Player</h2>
     <button hlmBtn variant="ghost" size="sm" (click)="close.emit()">
-      <ng-icon name="lucideX" size="20"></ng-icon>
+      <ng-icon hlm name="lucideX" size="sm"></ng-icon>
     </button>
   </div>
 
@@ -13,6 +13,7 @@
       hlmBtn
       [variant]="mode === 'invite' ? 'default' : 'outline'"
       class="flex-1"
+      [class]="mode === 'invite' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : ''"
       (click)="setMode('invite')"
     >
       Invite Player
@@ -21,6 +22,7 @@
       hlmBtn
       [variant]="mode === 'guest' ? 'default' : 'outline'"
       class="flex-1"
+      [class]="mode === 'guest' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : ''"
       (click)="setMode('guest')"
     >
       Add Guest
@@ -44,13 +46,14 @@
     @if (!selectedUser) {
       <!-- Search input -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Search by name or email</label>
+        <label hlmLabel class="block text-sm font-medium text-gray-700 mb-1">Search by name or email</label>
         <input
+          hlmInput
           type="text"
           [ngModel]="searchTerm"
           (ngModelChange)="onSearchInput($event)"
           placeholder="Type to search..."
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          class="w-full"
         />
       </div>
 
@@ -61,11 +64,11 @@
         <div class="border border-gray-200 rounded-lg divide-y max-h-60 overflow-y-auto mb-4">
           @for (user of searchResults; track user.uid) {
             <div
-              class="p-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
+              class="p-3 hover:bg-blue-50 cursor-pointer flex items-center gap-3"
               (click)="selectUser(user)"
             >
               <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <ng-icon name="lucideUser" class="text-blue-600" size="16"></ng-icon>
+                <ng-icon hlm name="lucideUser" class="text-blue-600" size="sm"></ng-icon>
               </div>
               <div>
                 <div class="font-medium">{{ user.displayName || 'No name' }}</div>
@@ -83,7 +86,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center">
-              <ng-icon name="lucideUser" class="text-blue-700" size="20"></ng-icon>
+              <ng-icon hlm name="lucideUser" class="text-blue-700" size="sm"></ng-icon>
             </div>
             <div>
               <div class="font-semibold">{{ selectedUser.displayName || 'No name' }}</div>
@@ -91,7 +94,7 @@
             </div>
           </div>
           <button hlmBtn variant="ghost" size="sm" (click)="clearSelected()">
-            <ng-icon name="lucideX" size="18"></ng-icon>
+            <ng-icon hlm name="lucideX" size="sm"></ng-icon>
           </button>
         </div>
       </div>
@@ -99,12 +102,12 @@
       <!-- Send invite button -->
       <button
         hlmBtn
-        class="w-full"
+        class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
         [disabled]="isLoading"
         (click)="sendInvite()"
       >
         @if (isLoading) {
-          <ng-icon name="lucideLoaderCircle" class="animate-spin mr-2" size="18"></ng-icon>
+          <ng-icon hlm name="lucideLoaderCircle" class="animate-spin mr-2" size="sm"></ng-icon>
           Sending...
         } @else {
           Send Invite
@@ -117,11 +120,12 @@
   @if (mode === 'guest') {
     <form [formGroup]="guestForm" (ngSubmit)="addGuest()" class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Guest Name *</label>
+        <label hlmLabel class="block text-sm font-medium text-gray-700 mb-1">Guest Name *</label>
         <input
+          hlmInput
           type="text"
           formControlName="playerName"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          class="w-full"
           placeholder="Enter name"
         />
         @if (guestForm.get('playerName')?.invalid && guestForm.get('playerName')?.touched) {
@@ -130,11 +134,12 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Handicap (optional)</label>
+        <label hlmLabel class="block text-sm font-medium text-gray-700 mb-1">Handicap (optional)</label>
         <input
+          hlmInput
           type="number"
           formControlName="handicap"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          class="w-full"
           placeholder="0-54"
           min="0"
           max="54"
@@ -147,11 +152,11 @@
       <button
         hlmBtn
         type="submit"
-        class="w-full"
+        class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
         [disabled]="guestForm.invalid || isLoading"
       >
         @if (isLoading) {
-          <ng-icon name="lucideLoaderCircle" class="animate-spin mr-2" size="18"></ng-icon>
+          <ng-icon hlm name="lucideLoaderCircle" class="animate-spin mr-2" size="sm"></ng-icon>
           Adding...
         } @else {
           Add Guest

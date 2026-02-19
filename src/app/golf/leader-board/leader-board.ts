@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil, interval } from 'rxjs';
 import { GameService } from '../../services/game.service';
@@ -23,7 +23,8 @@ export class Leaderboard{
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private gameService: GameService
+    private gameService: GameService,
+    private cdr: ChangeDetectorRef
   ) {
     console.log('[LeaderboardComponent] Component initialized');
   }
@@ -36,11 +37,11 @@ export class Leaderboard{
   ngOnInit(): void {
     console.log('[LeaderboardComponent] ngOnInit called');
     
-    // Get game ID from route parameters
+    // Get game ID from route parameters (route uses :id not :gameId)
     this.route.params
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
-        this.gameId = params['gameId'];
+        this.gameId = params['id']; // Changed from 'gameId' to 'id'
         console.log('[LeaderboardComponent] Game ID from route:', this.gameId);
         
         if (this.gameId) {
@@ -49,12 +50,12 @@ export class Leaderboard{
       });
     
     // Setup auto-refresh
-    interval(this.autoRefreshInterval)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        console.log('[LeaderboardComponent] Auto-refreshing leaderboard');
-        this.loadLeaderboard(true);
-      });
+    // interval(this.autoRefreshInterval)
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe(() => {
+    //     console.log('[LeaderboardComponent] Auto-refreshing leaderboard');
+    //     this.loadLeaderboard(true);
+    //   });
   }
 
   // Cleanup subscriptions when component is destroyed
@@ -77,12 +78,22 @@ export class Leaderboard{
     }
     
     try {
-      // Load game data
-      this.gameService.getGame(this.gameId).subscribe(data => {
-        if (data)//check if data exisits
-        {
-          this.game = data; // get data
-        }
+      // Load game data - wait for it to complete
+      await new Promise<void>((resolve) => {
+        this.gameService.getGame(this.gameId).subscribe({
+          next: (data) => {
+            if (data) {
+              this.game = data;
+              console.log('[LeaderboardComponent] Game loaded:', this.game.gameId);
+              console.log('[LeaderboardComponent] Course:', this.game.courseInfo.courseName);
+            }
+            resolve();
+          },
+          error: (error) => {
+            console.error('[LeaderboardComponent] Error loading game:', error);
+            resolve();
+          }
+        });
       });
       
       if (!this.game) {
@@ -91,9 +102,6 @@ export class Leaderboard{
         this.isLoading = false;
         return;
       }
-      
-      console.log('[LeaderboardComponent] Game loaded:', this.game.gameId);
-      console.log('[LeaderboardComponent] Course:', this.game.courseInfo.courseName);
       
       // Load leaderboard
       this.leaderboard = await this.gameService.getLeaderboard(this.gameId);
@@ -106,10 +114,14 @@ export class Leaderboard{
       
       this.isLoading = false;
       
+      // Trigger change detection ONCE after all data is loaded
+      this.cdr.detectChanges();
+      
     } catch (error) {
       console.error('[LeaderboardComponent] Error loading leaderboard:', error);
       this.errorMessage = 'Failed to load leaderboard';
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -134,10 +146,14 @@ export class Leaderboard{
       
       this.isLoading = false;
       
+      // Trigger change detection ONCE after all data is loaded
+      this.cdr.detectChanges();
+      
     } catch (error) {
       console.error('[LeaderboardComponent] Error loading leaderboard data:', error);
       this.errorMessage = 'Failed to load leaderboard data';
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -148,7 +164,7 @@ export class Leaderboard{
   // Navigate back to scorecard for current game
   backToScorecard(): void {
     console.log('[LeaderboardComponent] Navigating back to scorecard');
-    this.router.navigate(['/scorecard', this.gameId]);
+    this.router.navigate(['/scoreCard', this.gameId]); // Changed from 'scorecard' to 'scoreCard'
   }
 
   // Navigate to home page
@@ -198,7 +214,6 @@ export class Leaderboard{
     if (!this.game) return 0;
     
     const percentage = (entry.holesCompleted / this.game.numberOfHoles) * 100;
-    console.log(`[LeaderboardComponent] Completion for ${entry.playerName}: ${percentage.toFixed(0)}%`);
     return percentage;
   }
 
