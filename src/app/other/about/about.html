@@ -1,0 +1,211 @@
+<!-- about.html -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-purple-50 flex flex-col items-center justify-center p-4">
+  <!-- Header with Close Button -->
+  <div class="w-full max-w-4xl mb-8 relative">
+    <div class="flex justify-end">
+      <button 
+        hlmBtn 
+        variant="ghost" 
+        size="icon" 
+        class="text-gray-500 hover:text-gray-800"
+        (click)="navigateToLogin()"
+      >
+        <ng-icon name="lucideX" class="h-6 w-6"></ng-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="w-full max-w-4xl">
+    <!-- App Header -->
+    <div class="text-center mb-12">
+      <div class="flex items-center justify-center space-x-4 mb-6">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
+          <ng-icon name="lucideTrophy" class="h-12 w-12 text-white"></ng-icon>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          GOLF-Scoring APP
+        </h1>
+      </div>
+      
+      <h2 class="text-4xl font-semibold text-gray-800 mb-6">About</h2>
+      
+      <div class="max-w-2xl mx-auto">
+        <p class="text-xl text-gray-600 mb-8">
+          we are a golf scorecard app that is easy to use
+        </p>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Mission Card -->
+      <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center mr-4">
+            <ng-icon name="lucideTarget" class="h-6 w-6 text-blue-600"></ng-icon>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-800">Our Mission</h3>
+        </div>
+        <p class="text-gray-600 leading-relaxed">
+          We're dedicated to revolutionizing how golfers track their game. Our mission is to make scoring effortless, 
+          competitive, and enjoyable for golfers of all skill levels. We believe every stroke matters, and every 
+          improvement deserves to be celebrated.
+        </p>
+      </div>
+
+      <!-- Features Card -->
+      <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center mr-4">
+            <ng-icon name="lucideStar" class="h-6 w-6 text-blue-600"></ng-icon>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-800">Key Features</h3>
+        </div>
+        <ul class="space-y-3">
+          <li class="flex items-start">
+            <ng-icon name="lucideCheck" class="h-5 w-5 text-green-500 mr-3 mt-0.5"></ng-icon>
+            <span class="text-gray-600">Easy-to-use digital scorecards</span>
+          </li>
+          <li class="flex items-start">
+            <ng-icon name="lucideCheck" class="h-5 w-5 text-green-500 mr-3 mt-0.5"></ng-icon>
+            <span class="text-gray-600">Real-time handicap tracking</span>
+          </li>
+          <li class="flex items-start">
+            <ng-icon name="lucideCheck" class="h-5 w-5 text-green-500 mr-3 mt-0.5"></ng-icon>
+            <span class="text-gray-600">Multiplayer game management</span>
+          </li>
+          <li class="flex items-start">
+            <ng-icon name="lucideCheck" class="h-5 w-5 text-green-500 mr-3 mt-0.5"></ng-icon>
+            <span class="text-gray-600">Live leaderboards and competitions</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- For Players Card -->
+      <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center mr-4">
+            <ng-icon name="lucideUsers" class="h-6 w-6 text-blue-600"></ng-icon>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-800">For Every Golfer</h3>
+        </div>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Whether you're a beginner learning the game or a seasoned pro tracking your tournament performance, 
+          our app adapts to your needs. No more paper scorecards, no more manual calculations.
+        </p>
+        <div class="mt-4">
+          <p class="text-sm text-gray-500">
+            <ng-icon name="lucideUser" class="h-4 w-4 inline mr-2 text-blue-500"></ng-icon>
+            Perfect for solo practice rounds
+          </p>
+          <p class="text-sm text-gray-500 mt-2">
+            <ng-icon name="lucideUsers" class="h-4 w-4 inline mr-2 text-blue-500"></ng-icon>
+            Ideal for friendly foursomes
+          </p>
+          <p class="text-sm text-gray-500 mt-2">
+            <ng-icon name="lucideTrophy" class="h-4 w-4 inline mr-2 text-blue-500"></ng-icon>
+            Great for club tournaments
+          </p>
+        </div>
+      </div>
+
+      <!-- Technology Card -->
+      <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center mr-4">
+            <ng-icon name="lucideCpu" class="h-6 w-6 text-blue-600"></ng-icon>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-800">Built With Modern Tech</h3>
+        </div>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          We use cutting-edge technology to ensure a seamless experience. Real-time updates, secure authentication, 
+          and reliable data storage make sure your golf data is always accessible and protected.
+        </p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Angular 21</span>
+          <span class="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">Firebase</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Spartan UI</span>
+          <span class="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">Real-time Database</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Call to Action Card -->
+    <div class="mt-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white">
+      <div class="text-center max-w-2xl mx-auto">
+        <h3 class="text-2xl font-bold mb-4">Ready to Improve Your Game?</h3>
+        <p class="text-blue-100 mb-6">
+          Join thousands of golfers who are already tracking their scores, lowering their handicaps, 
+          and having more fun on the course.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button 
+            hlmBtn 
+            class="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
+            (click)="navigateToLogin()"
+          >
+            <ng-icon name="lucideLogIn" class="h-5 w-5 mr-2"></ng-icon>
+            Get Started
+          </button>
+          <button 
+            hlmBtn 
+            variant="outline" 
+            class="border-white/30 text-white hover:bg-white/20"
+            (click)="navigateToLogin()"
+          >
+            Sign In to Your Account
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team/Values Section -->
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center mx-auto mb-4">
+          <ng-icon name="lucideShield" class="h-8 w-8 text-blue-600"></ng-icon>
+        </div>
+        <h4 class="text-lg font-bold text-gray-800 mb-2">Secure & Private</h4>
+        <p class="text-gray-600 text-sm">
+          Your data is protected with enterprise-grade security. We never share your information.
+        </p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center mx-auto mb-4">
+          <ng-icon name="lucideHeart" class="h-8 w-8 text-blue-600"></ng-icon>
+        </div>
+        <h4 class="text-lg font-bold text-gray-800 mb-2">Built by Golfers</h4>
+        <p class="text-gray-600 text-sm">
+          Created by passionate golfers who understand what you need on the course.
+        </p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center mx-auto mb-4">
+          <ng-icon name="lucideZap" class="h-8 w-8 text-blue-600"></ng-icon>
+        </div>
+        <h4 class="text-lg font-bold text-gray-800 mb-2">Always Improving</h4>
+        <p class="text-gray-600 text-sm">
+          Regular updates with new features based on user feedback and needs.
+        </p>
+      </div>
+    </div>
+
+    <!-- Testimonials -->
+    
+
+  <!-- Footer -->
+  <div class="mt-16 text-center">
+    <p class="text-gray-500 text-sm">
+      © 2026 GOLF-Scoring APP. All rights reserved.
+    </p>
+    <p class="text-gray-500 text-sm mt-2">
+      <button 
+        (click)="navigateToLogin()"
+        class="text-blue-600 hover:text-blue-800 hover:underline"
+      >
+        Back to Login
+      </button>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,332 @@
+<!-- user-profile.html -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-purple-50 p-4">
+  <!-- Header Section -->
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-8">
+      <!-- Back Navigation -->
+      <div class="mb-6">
+        <button 
+          hlmBtn 
+          variant="ghost" 
+          size="sm" 
+          (click)="goToHome()"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          <ng-icon name="lucideArrowLeft" class="h-4 w-4 mr-2"></ng-icon>
+          Back to Home
+        </button>
+      </div>
+
+      <!-- App Header -->
+      <div class="flex items-center justify-center space-x-4 mb-6">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
+          <ng-icon name="lucideUser" class="h-6 w-6 text-white"></ng-icon>
+        </div>
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          GOLF-Scoring APP
+        </h1>
+      </div>
+      
+      <!-- Welcome Message -->
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-2">
+          Welcome {{ currentUser?.displayName || 'Player' }}!
+        </h2>
+        <p class="text-lg text-gray-600">
+          Manage your profile and golfing information
+        </p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column - Profile Information -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden">
+          <!-- Profile Header -->
+          <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-2xl font-bold">Profile</h3>
+                <p class="text-blue-100 text-sm mt-1">
+                  {{ isEditMode ? 'Edit your profile information' : 'View your profile information' }}
+                </p>
+              </div>
+              <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/30">
+                <ng-icon name="lucideUser" class="h-8 w-8"></ng-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          @if (successMessage) {
+            <div class="mx-6 mt-6 p-4 rounded-lg bg-green-50 border border-green-200 flex items-start">
+              <ng-icon name="lucideCheck" class="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0"></ng-icon>
+              <div>
+                <p class="text-green-800 font-medium">Success!</p>
+                <p class="text-green-700 text-sm">{{ successMessage }}</p>
+              </div>
+            </div>
+          }
+
+          @if (errorMessage) {
+            <div class="mx-6 mt-6 p-4 rounded-lg bg-red-50 border border-red-200 flex items-start">
+              <ng-icon name="lucideAlertCircle" class="h-5 w-5 text-red-600 mr-3 mt-0.5 flex-shrink-0"></ng-icon>
+              <div>
+                <p class="text-red-800 font-medium">Error</p>
+                <p class="text-red-700 text-sm">{{ errorMessage }}</p>
+              </div>
+            </div>
+          }
+
+          <!-- Profile Form -->
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="p-6 space-y-6">
+            <!-- Player Name -->
+            <div>
+              <label hlmLabel class="text-gray-700 mb-2 block font-medium">Player Name</label>
+              @if (isEditMode) {
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <ng-icon name="lucideUser" class="h-5 w-5 text-gray-400"></ng-icon>
+                  </div>
+                  <input 
+                    hlmInput 
+                    formControlName="displayName"
+                    type="text" 
+                    placeholder="Enter your name" 
+                    class="w-full pl-10"
+                    [class.border-red-300]="displayName?.invalid && displayName?.touched"
+                  />
+                </div>
+                @if (displayName?.invalid && displayName?.touched) {
+                  <p class="text-sm text-red-600 mt-2">
+                    @if (displayName?.errors?.['required']) {
+                      Name is required
+                    }
+                    @if (displayName?.errors?.['minlength']) {
+                      Name must be at least 2 characters
+                    }
+                  </p>
+                }
+              } @else {
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <p class="text-gray-800">{{ displayNameValue }}</p>
+                </div>
+              }
+            </div>
+
+            <!-- Handicap -->
+            <div>
+              <label hlmLabel class="text-gray-700 mb-2 block font-medium">Handicap</label>
+              @if (isEditMode) {
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <ng-icon name="lucideGraduationCap" class="h-5 w-5 text-gray-400"></ng-icon>
+                  </div>
+                  <input 
+                    hlmInput 
+                    formControlName="handicap"
+                    type="number" 
+                    placeholder="Enter handicap (0-54)" 
+                    min="0"
+                    max="54"
+                    class="w-full pl-10"
+                    [class.border-red-300]="handicap?.invalid && handicap?.touched"
+                  />
+                </div>
+                @if (handicap?.invalid && handicap?.touched) {
+                  <p class="text-sm text-red-600 mt-2">
+                    @if (handicap?.errors?.['min']) {
+                      Handicap must be at least 0
+                    }
+                    @if (handicap?.errors?.['max']) {
+                      Handicap must be at most 54
+                    }
+                  </p>
+                }
+              } @else {
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <p class="text-gray-800">{{ handicapValue }}</p>
+                </div>
+              }
+            </div>
+
+            <!-- Email (Read-only) -->
+            <div>
+              <label hlmLabel class="text-gray-700 mb-2 block font-medium">Email</label>
+              <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <p class="text-gray-800">{{ emailValue || 'Not set' }}</p>
+              </div>
+              <p class="text-sm text-gray-500 mt-2">
+                <ng-icon name="lucideInfo" class="h-4 w-4 inline mr-1"></ng-icon>
+                Email cannot be changed
+              </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pt-6 border-t border-gray-200">
+              @if (isEditMode) {
+                <div class="flex space-x-3">
+                  <button 
+                    hlmBtn 
+                    type="button"
+                    variant="outline" 
+                    class="flex-1"
+                    (click)="cancelEdit()"
+                    [disabled]="isLoading"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    hlmBtn 
+                    type="submit" 
+                    class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    [disabled]="profileForm.invalid || isLoading"
+                  >
+                    @if (isLoading) {
+                      <div class="flex items-center justify-center">
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                        Saving...
+                      </div>
+                    } @else {
+                      Save Changes
+                    }
+                  </button>
+                </div>
+              } @else {
+                <div class="flex space-x-3">
+                  <button 
+                    hlmBtn 
+                    type="button"
+                    variant="outline" 
+                    class="flex-1"
+                    (click)="goToForgotPassword()"
+                  >
+                    <ng-icon name="lucideKey" class="h-4 w-4 mr-2"></ng-icon>
+                    Change Password
+                  </button>
+                  <button 
+                    hlmBtn 
+                    type="button"
+                    class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    (click)="enterEditMode()"
+                  >
+                    <ng-icon name="lucideEdit" class="h-4 w-4 mr-2"></ng-icon>
+                    Edit Profile
+                  </button>
+                </div>
+              }
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column - Actions & Stats -->
+      <div class="space-y-8">
+        <!-- Quick Actions Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
+          <h3 class="text-xl font-bold text-gray-800 mb-4">Quick Actions</h3>
+          
+          <div class="space-y-3">
+            <button 
+              hlmBtn 
+              variant="outline" 
+              class="w-full justify-start"
+              (click)="goToHome()"
+            >
+              <ng-icon name="lucideHome" class="h-5 w-5 mr-3 text-blue-600"></ng-icon>
+              Home Dashboard
+            </button>
+            
+            <button 
+              hlmBtn 
+              variant="outline" 
+              class="w-full justify-start"
+              (click)="goToForgotPassword()"
+            >
+              <ng-icon name="lucideKey" class="h-5 w-5 mr-3 text-blue-600"></ng-icon>
+              Forgot Password
+            </button>
+            
+            <button 
+              hlmBtn 
+              variant="destructive" 
+              class="w-full justify-start mt-6"
+              (click)="logout()"
+            >
+              <ng-icon name="lucideLogOut" class="h-5 w-5 mr-3"></ng-icon>
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <!-- Account Status Card -->
+        <!-- <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-xl p-6 text-white">
+          <h3 class="text-xl font-bold mb-4">Account Status</h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-blue-100">Member Since</span>
+              <span class="font-semibold">
+                {{ currentUser?.createdAt ? (currentUser?.createdAt | date: 'MMM yyyy') : 'Recently' }}
+              </span>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-blue-100">Account Status</span>
+              <span class="px-2 py-1 text-xs font-semibold bg-green-500/30 text-green-100 rounded-full">
+                Active
+              </span>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-blue-100">Last Updated</span>
+                <span class="font-semibold">
+                    {{ currentUser?.updatedAt ? (currentUser?.updatedAt | date: 'MMM d, yyyy') : 'Never' }}
+                </span>
+              
+            </div>
+          </div>
+        </div> -->
+
+        <!-- Handicap Info Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
+          <h3 class="text-xl font-bold text-gray-800 mb-4">About Handicap</h3>
+          
+          <div class="space-y-3">
+            <div class="flex items-start space-x-3">
+              <ng-icon name="lucideInfo" class="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0"></ng-icon>
+              <p class="text-sm text-gray-600">
+                Your handicap is a numerical measure of your golfing ability.
+              </p>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <ng-icon name="lucideTarget" class="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0"></ng-icon>
+              <p class="text-sm text-gray-600">
+                Lower handicaps indicate better players (0-5: professional level).
+              </p>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <ng-icon name="lucideTrendingUp" class="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0"></ng-icon>
+              <p class="text-sm text-gray-600">
+                Update regularly to track your improvement over time.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-12 text-center">
+      <p class="text-gray-500 text-sm">
+        Need help? Contact support at help@golf-scoring-app.com
+      </p>
+      <p class="text-gray-500 text-sm mt-2">
+        © 2024 GOLF-Scoring APP. All rights reserved.
+      </p>
+    </div>
+  </div>
+</div>

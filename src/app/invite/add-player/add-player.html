@@ -1,0 +1,162 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-bold text-gray-800">Add Player</h2>
+    <button hlmBtn variant="ghost" size="sm" (click)="close.emit()">
+      <ng-icon name="lucideX" size="20"></ng-icon>
+    </button>
+  </div>
+
+  <!-- Mode Toggle -->
+  <div class="flex gap-2 mb-6">
+    <button
+      hlmBtn
+      [variant]="mode === 'invite' ? 'default' : 'outline'"
+      class="flex-1"
+      (click)="setMode('invite')"
+    >
+      Invite Player
+    </button>
+    <button
+      hlmBtn
+      [variant]="mode === 'guest' ? 'default' : 'outline'"
+      class="flex-1"
+      (click)="setMode('guest')"
+    >
+      Add Guest
+    </button>
+  </div>
+
+  <!-- Error / Success Messages -->
+  @if (errorMessage) {
+    <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-red-700 text-sm">
+      {{ errorMessage }}
+    </div>
+  }
+  @if (successMessage) {
+    <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 text-green-700 text-sm">
+      {{ successMessage }}
+    </div>
+  }
+
+  <!-- INVITE MODE -->
+  @if (mode === 'invite') {
+    @if (!selectedUser) {
+      <!-- Search input -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Search by name or email</label>
+        <input
+          type="text"
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchInput($event)"
+          placeholder="Type to search..."
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Search results -->
+      @if (isSearching) {
+        <div class="text-center py-4 text-gray-500">Searching...</div>
+      } @else if (searchResults.length > 0) {
+        <div class="border border-gray-200 rounded-lg divide-y max-h-60 overflow-y-auto mb-4">
+          @for (user of searchResults; track user.uid) {
+            <div
+              class="p-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
+              (click)="selectUser(user)"
+            >
+              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <ng-icon name="lucideUser" class="text-blue-600" size="16"></ng-icon>
+              </div>
+              <div>
+                <div class="font-medium">{{ user.displayName || 'No name' }}</div>
+                <div class="text-xs text-gray-500">{{ user.email }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (searchTerm && !isSearching) {
+        <div class="text-center py-4 text-gray-500">No users found</div>
+      }
+    } @else {
+      <!-- Selected user confirmation -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center">
+              <ng-icon name="lucideUser" class="text-blue-700" size="20"></ng-icon>
+            </div>
+            <div>
+              <div class="font-semibold">{{ selectedUser.displayName || 'No name' }}</div>
+              <div class="text-sm text-gray-600">{{ selectedUser.email }}</div>
+            </div>
+          </div>
+          <button hlmBtn variant="ghost" size="sm" (click)="clearSelected()">
+            <ng-icon name="lucideX" size="18"></ng-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Send invite button -->
+      <button
+        hlmBtn
+        class="w-full"
+        [disabled]="isLoading"
+        (click)="sendInvite()"
+      >
+        @if (isLoading) {
+          <ng-icon name="lucideLoaderCircle" class="animate-spin mr-2" size="18"></ng-icon>
+          Sending...
+        } @else {
+          Send Invite
+        }
+      </button>
+    }
+  }
+
+  <!-- GUEST MODE -->
+  @if (mode === 'guest') {
+    <form [formGroup]="guestForm" (ngSubmit)="addGuest()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Guest Name *</label>
+        <input
+          type="text"
+          formControlName="playerName"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter name"
+        />
+        @if (guestForm.get('playerName')?.invalid && guestForm.get('playerName')?.touched) {
+          <p class="text-sm text-red-600 mt-1">Name is required (min 2 characters)</p>
+        }
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Handicap (optional)</label>
+        <input
+          type="number"
+          formControlName="handicap"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          placeholder="0-54"
+          min="0"
+          max="54"
+        />
+        @if (guestForm.get('handicap')?.errors?.['min'] || guestForm.get('handicap')?.errors?.['max']) {
+          <p class="text-sm text-red-600 mt-1">Handicap must be between 0 and 54</p>
+        }
+      </div>
+
+      <button
+        hlmBtn
+        type="submit"
+        class="w-full"
+        [disabled]="guestForm.invalid || isLoading"
+      >
+        @if (isLoading) {
+          <ng-icon name="lucideLoaderCircle" class="animate-spin mr-2" size="18"></ng-icon>
+          Adding...
+        } @else {
+          Add Guest
+        }
+      </button>
+    </form>
+  }
+</div>

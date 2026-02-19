@@ -1,0 +1,292 @@
+<!-- sign-up.html -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-purple-50 flex flex-col items-center justify-center p-4">
+  <!-- Header Section -->
+  <div class="w-full max-w-6xl text-center mb-8">
+    <div class="flex items-center justify-center space-x-4 mb-6">
+      <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
+        <ng-icon name="lucideTrophy" class="h-10 w-10 text-white"></ng-icon>
+      </div>
+      <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        GOLF-Scoring APP
+      </h1>
+    </div>
+    
+    <h2 class="text-3xl font-semibold text-gray-800 mb-4">Create Your Account</h2>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+      Join our golf scoring community and track your game like a pro
+    </p>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-8">
+    <!-- Left Side - Sign Up Form -->
+    <div class="w-full md:w-1/2 max-w-md">
+      <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-8">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Sign Up</h3>
+        
+        <!-- Error Message -->
+        @if (errorMessage) {
+          <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 flex items-start">
+            <ng-icon name="lucideAlertCircle" class="h-5 w-5 text-red-600 mr-3 mt-0.5 flex-shrink-0"></ng-icon>
+            <div>
+              <p class="text-red-800 font-medium">Registration Failed</p>
+              <p class="text-red-700 text-sm">{{ errorMessage }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Sign Up Form -->
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-6">
+          <!-- Email Input -->
+          <div class="relative">
+            <label hlmLabel class="text-gray-700 mb-2 block">Email</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ng-icon name="lucideMail" class="h-5 w-5 text-gray-400"></ng-icon>
+              </div>
+              <input 
+                hlmInput 
+                formControlName="email"
+                type="email" 
+                placeholder="Enter Email" 
+                class="w-full pl-10"
+                [class.border-red-300]="email?.invalid && email?.touched"
+              />
+            </div>
+            @if (email?.invalid && email?.touched) {
+              <p class="text-sm text-red-600 mt-2">
+                @if (email?.errors?.['required']) {
+                  Email is required
+                }
+                @if (email?.errors?.['email']) {
+                  Please enter a valid email
+                }
+              </p>
+            }
+          </div>
+
+          <!-- Display Name Input -->
+          <div class="relative">
+            <label hlmLabel class="text-gray-700 mb-2 block">Name</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ng-icon name="lucideUser" class="h-5 w-5 text-gray-400"></ng-icon>
+              </div>
+              <input 
+                hlmInput 
+                formControlName="displayName"
+                type="text" 
+                placeholder="Enter your name" 
+                class="w-full pl-10"
+                [class.border-red-300]="displayName?.invalid && displayName?.touched"
+              />
+            </div>
+            @if (displayName?.invalid && displayName?.touched) {
+              <p class="text-sm text-red-600 mt-2">
+                @if (displayName?.errors?.['required']) {
+                  Name is required
+                }
+              </p>
+            }
+          </div>
+
+          <!-- Password Input -->
+          <div class="relative">
+            <label hlmLabel class="text-gray-700 mb-2 block">Password</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ng-icon name="lucideLock" class="h-5 w-5 text-gray-400"></ng-icon>
+              </div>
+              <input 
+                hlmInput 
+                formControlName="password"
+                type="password" 
+                placeholder="Enter Password (min. 6 characters)" 
+                class="w-full pl-10"
+                [class.border-red-300]="password?.invalid && password?.touched"
+              />
+            </div>
+            @if (password?.invalid && password?.touched) {
+              <p class="text-sm text-red-600 mt-2">
+                @if (password?.errors?.['required']) {
+                  Password is required
+                }
+                @if (password?.errors?.['minlength']) {
+                  Password must be at least 6 characters
+                }
+              </p>
+            }
+          </div>
+
+          <!-- Handicap Input -->
+          <div class="relative">
+            <label hlmLabel class="text-gray-700 mb-2 block">Handicap</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ng-icon name="lucideGraduationCap" class="h-5 w-5 text-gray-400"></ng-icon>
+              </div>
+              <input 
+                hlmInput 
+                formControlName="handicap"
+                type="number" 
+                placeholder="Enter your handicap (0-54)" 
+                min="0"
+                max="54"
+                class="w-full pl-10"
+                [class.border-red-300]="handicap?.invalid && handicap?.touched"
+              />
+            </div>
+            @if (handicap?.invalid && handicap?.touched) {
+              <p class="text-sm text-red-600 mt-2">
+                @if (handicap?.errors?.['required']) {
+                  Handicap is required
+                }
+                @if (handicap?.errors?.['min']) {
+                  Handicap must be at least 0
+                }
+                @if (handicap?.errors?.['max']) {
+                  Handicap must be at most 54
+                }
+              </p>
+            }
+          </div>
+
+          <!-- Note: The TypeScript doesn't have confirmPassword in the form group, but has a validator for it.
+               This is inconsistent. We'll include it in the UI but note it won't be validated by the form. -->
+
+          <!-- Sign Up Button -->
+          <button 
+            hlmBtn 
+            type="submit" 
+            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 text-lg font-semibold mt-8"
+            [disabled]="signupForm.invalid || loading"
+          >
+            @if (loading) {
+              <div class="flex items-center justify-center">
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                Creating Account...
+              </div>
+            } @else {
+              <div class="flex items-center justify-center">
+                <ng-icon name="lucideUserPlus" class="h-5 w-5 mr-2"></ng-icon>
+                Sign Up
+              </div>
+            }
+          </button>
+        </form>
+
+        <!-- Login Link -->
+        <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+          <p class="text-gray-600">
+            Already have an account?
+            <button 
+              type="button"
+              (click)="navigateToLogin()"
+              class="text-blue-600 hover:text-blue-800 font-semibold hover:underline ml-2"
+            >
+              Sign In
+            </button>
+          </p>
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="mt-4 text-center">
+          <button 
+            type="button"
+            (click)="goToForgotpassword()"
+            class="text-sm text-blue-600 hover:text-blue-800 font-medium hover:underline"
+          >
+            Forgot Password?
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Information Section -->
+    <div class="w-full md:w-1/2 max-w-md">
+      <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white">
+        <div class="mb-8">
+          <h3 class="text-2xl font-bold mb-4">Why Join GOLF-Scoring APP?</h3>
+          <p class="text-blue-100">
+            Create an account to unlock all features and start improving your golf game today.
+            Track scores, monitor progress, and compete with friends.
+          </p>
+        </div>
+
+        <!-- Benefits -->
+        <div class="space-y-4">
+          <div class="flex items-start space-x-3">
+            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <ng-icon name="lucideBarChart" class="h-5 w-5"></ng-icon>
+            </div>
+            <div>
+              <h4 class="font-semibold">Track Your Progress</h4>
+              <p class="text-blue-100 text-sm">Monitor your handicap and scoring trends</p>
+            </div>
+          </div>
+
+          <div class="flex items-start space-x-3">
+            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <ng-icon name="lucideUsers" class="h-5 w-5"></ng-icon>
+            </div>
+            <div>
+              <h4 class="font-semibold">Compete with Friends</h4>
+              <p class="text-blue-100 text-sm">Create games and tournaments</p>
+            </div>
+          </div>
+
+          <div class="flex items-start space-x-3">
+            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <ng-icon name="lucideTrophy" class="h-5 w-5"></ng-icon>
+            </div>
+            <div>
+              <h4 class="font-semibold">Win Badges & Achievements</h4>
+              <p class="text-blue-100 text-sm">Earn rewards for your achievements</p>
+            </div>
+          </div>
+
+          <div class="flex items-start space-x-3">
+            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <ng-icon name="lucideTrendingUp" class="h-5 w-5"></ng-icon>
+            </div>
+            <div>
+              <h4 class="font-semibold">Improve Your Game</h4>
+              <p class="text-blue-100 text-sm">Get insights to lower your scores</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacy Note -->
+        <div class="mt-8 p-4 bg-white/10 rounded-lg">
+          <p class="text-blue-100 text-sm">
+            <ng-icon name="lucideLock" class="h-4 w-4 inline mr-2"></ng-icon>
+            Your data is secure. We never share your personal information.
+          </p>
+        </div>
+
+        <!-- About Link -->
+        <div class="mt-8 pt-6 border-t border-blue-400/30 text-center">
+          <a 
+            routerLink="/about"
+            hlmBtn 
+            variant="outline" 
+            class="border-white/30 text-white hover:bg-white/20"
+          >
+            <ng-icon name="lucideChevronRight" class="h-4 w-4 mr-2"></ng-icon>
+            Learn More about us
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-12 text-center">
+    <p class="text-gray-500 text-sm">
+      By signing up, you agree to our Terms of Service and Privacy Policy
+    </p>
+    <p class="text-gray-500 text-sm mt-2">
+      © 2026 GOLF-Scoring APP. All rights reserved.
+    </p>
+  </div>
+</div>

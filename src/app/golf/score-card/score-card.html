@@ -1,0 +1,674 @@
+<div class="min-h-screen bg-gradient-to-b from-green-50 to-blue-50 p-4">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="flex flex-col items-center justify-center py-12">
+        <ng-icon name="lucideRefreshCw" class="animate-spin text-gray-400 mb-4" size="32"></ng-icon>
+        <p class="text-gray-600">Loading scorecard...</p>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (errorMessage && !isLoading) {
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <div class="flex items-center">
+          <ng-icon name="lucideAlertCircle" class="text-red-500 mr-2" size="20"></ng-icon>
+          <span class="text-red-700">{{ errorMessage }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- SCREEN 1: Course Info Screen (Initial View) -->
+    @if (game && !isLoading && !showMainScorecard) {
+      <div class="bg-white rounded-xl shadow-lg p-6 max-w-2xl mx-auto">
+        
+        <!-- Header with Close -->
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-gray-800">{{ game.courseInfo.courseName }}</h1>
+          <button 
+            hlmBtn
+            variant="ghost"
+            size="sm"
+            (click)="goHome()"
+          >
+            <ng-icon name="lucideX" size="20"></ng-icon>
+          </button>
+        </div>
+
+        <!-- Course Details -->
+        <div class="space-y-4 mb-6">
+          <div>
+            <div class="text-sm text-gray-600">Date created - {{ game.numberOfHoles }} holes - {{ game.players.length }} players</div>
+          </div>
+
+          <!-- Course Info Table -->
+          <div class="border border-gray-200 rounded-lg overflow-x-auto">
+            <table class="w-full" [style.min-width.px]="(playedHoles.length + 2) * 80">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Holes</th>
+                  @for (hole of playedHoles; track $index) {
+                    <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">
+                      {{ game.startingHole + $index }}
+                    </th>
+                  }
+                  <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Par Row -->
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 px-4 font-medium text-gray-700">Par</td>
+                  @for (hole of playedHoles; track $index) {
+                    <td class="text-center py-3 px-4 text-gray-600">{{ hole.par }}</td>
+                  }
+                  <td class="text-center py-3 px-4 font-bold text-gray-700">{{ playedTotalPar }}</td>
+                </tr>
+
+                <!-- Yardage Row -->
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 px-4 font-medium text-gray-700">Yard</td>
+                  @for (hole of playedHoles; track $index) {
+                    <td class="text-center py-3 px-4 text-gray-600">{{ hole.yardage }}</td>
+                  }
+                  <td class="text-center py-3 px-4 font-medium text-gray-700">{{ playedTotalYardage }}</td>
+                </tr>
+
+                <!-- Player Rows -->
+                @for (player of game.players; track player.gamePlayerId) {
+                  <tr class="border-b border-gray-100 last:border-b-0">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                          <ng-icon name="lucideUser" class="text-blue-600" size="16"></ng-icon>
+                        </div>
+                        <div>
+                          <div class="font-medium text-gray-800">{{ player.playerName }}</div>
+                          <div class="text-xs text-gray-500">{{ player.teeName }}</div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Score inputs for each hole -->
+                    @for (holeScore of player.holeScores; track holeScore.holeNumber) {
+                      <td class="text-center py-3 px-4">
+                        <input
+                          type="number"
+                          [value]="holeScore.strokes || ''"
+                          (change)="updateScoreForPlayer(player.gamePlayerId, holeScore.holeNumber, $event.target.value ? +$event.target.value : 0)"
+                          class="w-16 text-center border rounded p-1 focus:ring-2 focus:ring-blue-500"
+                          min="0"
+                          placeholder="-"
+                        />
+                      </td>
+                    }
+
+                    <!-- Total and to par -->
+                    <td class="text-center py-3 px-4">
+                      <div class="font-bold text-gray-800">{{ player.totalScore || 0 }}</div>
+                      <div class="text-xs font-medium"
+                          [class.text-green-600]="getScoreToPar(player) < 0"
+                          [class.text-red-600]="getScoreToPar(player) > 0"
+                          [class.text-gray-600]="getScoreToPar(player) === 0">
+                        {{ formatScoreToPar(getScoreToPar(player)) }}
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Add Player Button -->
+        <div class="mb-6">
+          <button 
+            hlmBtn
+            variant="outline"
+            class="w-full"
+            (click)="openAddPlayerDialog()"
+          >
+            <ng-icon name="lucidePlus" class="mr-2" size="18"></ng-icon>
+            Add Player
+          </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+          <button 
+            hlmBtn
+            variant="outline"
+            class="flex-1"
+            (click)="startRound()"
+          >
+            Scorecard
+          </button>
+          <button hlmBtn class="flex-1" (click)="openScoreDialogForCurrentPlayer()">
+            AddScore
+          </button>
+        </div>
+
+        <div class="mt-4 flex justify-center gap-3">
+          <button 
+            hlmBtn
+            variant="ghost"
+            (click)="goHome()"
+          >
+            <ng-icon name="lucideHome" class="mr-2" size="18"></ng-icon>
+            Home
+          </button>
+          <button 
+            hlmBtn
+            variant="ghost"
+            (click)="viewLeaderboard()"
+          >
+            <ng-icon name="lucideTrophy" class="mr-2" size="18"></ng-icon>
+            Leader
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- SCREEN 2: Main Scorecard (After clicking Scorecard/AddScore) -->
+    @if (game && !isLoading && showMainScorecard) {
+      <div class="bg-white rounded-xl shadow-lg p-6" style="overflow-x: hidden; width: 100%;">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-start mb-6">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h1 class="text-2xl font-bold text-gray-800">{{ game.courseInfo.courseName }}</h1>
+              <button 
+                hlmBtn
+                variant="ghost"
+                size="sm"
+                (click)="openCourseInfoDialog()"
+              >
+                <ng-icon name="lucideInfo" size="18"></ng-icon>
+              </button>
+            </div>
+            
+            <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+              <div class="flex items-center">
+                <ng-icon name="lucideCalendar" class="mr-1" size="14"></ng-icon>
+                {{ game.createdAt | date:'mediumDate' }}
+              </div>
+              <div class="flex items-center">
+                <ng-icon name="lucideFlag" class="mr-1" size="14"></ng-icon>
+                {{ game.numberOfHoles }} Holes
+              </div>
+              <div class="flex items-center">
+                <ng-icon name="lucideUsers" class="mr-1" size="14"></ng-icon>
+                {{ game.players.length }} Players
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button hlmBtn variant="outline" (click)="viewLeaderboard()">
+              <ng-icon name="lucideTrophy" class="mr-2" size="18"></ng-icon>
+              Leader
+            </button>
+            <button hlmBtn variant="ghost" (click)="showMainScorecard = false">
+              <ng-icon name="lucideArrowLeft" size="18"></ng-icon>
+              Back
+            </button>
+            <button hlmBtn variant="ghost" (click)="goHome()">
+              <ng-icon name="lucideHome" size="18"></ng-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Scorecard Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse" [style.min-width.px]="(playedHoles.length + 2) * 80">
+            <thead>
+              <tr class="border-b-2 border-gray-300">
+                <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Holes</th>
+                @for (hole of playedHoles; track $index) {
+                  <th class="text-center py-3 px-2 text-sm font-semibold text-gray-700">
+                    {{ game.startingHole + $index }}
+                  </th>
+                }
+                <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Par Row -->
+              <tr class="border-b border-gray-200 bg-gray-50">
+                <td class="py-3 px-4 font-medium text-gray-700">Par</td>
+                @for (hole of playedHoles; track $index) {
+                  <td class="text-center py-3 px-2 text-gray-600">{{ hole.par }}</td>
+                }
+                <td class="text-center py-3 px-4 font-bold text-gray-700">{{ playedTotalPar }}</td>
+              </tr>
+
+              <!-- Yardage Row -->
+              <tr class="border-b border-gray-200">
+                <td class="py-3 px-4 font-medium text-gray-700">Yard</td>
+                @for (hole of playedHoles; track $index) {
+                  <td class="text-center py-3 px-2 text-gray-600 text-sm">{{ hole.yardage }}</td>
+                }
+                <td class="text-center py-3 px-4 font-medium text-gray-700 text-sm">{{ playedTotalYardage }}</td>
+              </tr>
+
+              <!-- Player Rows -->
+              @for (player of game.players; track player.gamePlayerId) {
+                <tr class="border-b border-gray-200 hover:bg-blue-50 transition-colors"
+                    [class.bg-blue-50]="player.userId === currentUser?.uid">
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <ng-icon name="lucideUser" class="text-blue-600" size="16"></ng-icon>
+                      </div>
+                      <div>
+                        <div class="font-medium text-gray-800">{{ player.playerName }}</div>
+                        <div class="text-xs text-gray-500">{{ player.teeName }}</div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Score cells -->
+                  @for (holeScore of player.holeScores; track holeScore.holeNumber) {
+                    <td class="text-center py-3 px-2">
+                      <button
+                        class="w-8 h-8 rounded-full flex items-center justify-center font-medium transition-colors"
+                        [class.bg-green-100]="holeScore.strokes && holeScore.strokes < holeScore.par"
+                        [class.text-green-700]="holeScore.strokes && holeScore.strokes < holeScore.par"
+                        [class.bg-red-100]="holeScore.strokes && holeScore.strokes > holeScore.par"
+                        [class.text-red-700]="holeScore.strokes && holeScore.strokes > holeScore.par"
+                        [class.bg-gray-100]="holeScore.strokes && holeScore.strokes === holeScore.par"
+                        [class.text-gray-700]="holeScore.strokes && holeScore.strokes === holeScore.par"
+                        [class.border-2]="!holeScore.strokes"
+                        [class.border-dashed]="!holeScore.strokes"
+                        [class.border-gray-300]="!holeScore.strokes"
+                        (click)="selectHole(holeScore.holeNumber); openScoreDialog(player)"
+                      >
+                        {{ holeScore.strokes || '-' }}
+                      </button>
+                    </td>
+                  }
+
+                  <!-- Total -->
+                  <td class="text-center py-3 px-4">
+                    <div class="font-bold text-gray-800">{{ player.totalScore || 0 }}</div>
+                    <div class="text-xs font-medium"
+                         [class.text-green-600]="getScoreToPar(player) < 0"
+                         [class.text-red-600]="getScoreToPar(player) > 0"
+                         [class.text-gray-600]="getScoreToPar(player) === 0">
+                      {{ formatScoreToPar(getScoreToPar(player)) }}
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Quick Stats -->
+        @if (currentPlayer) {
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Your Stats</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="text-center p-4 bg-green-50 rounded-lg">
+                <div class="text-2xl font-bold text-green-600">{{ calculateBirdies(currentPlayer) }}</div>
+                <div class="text-sm text-gray-600">Birdies</div>
+              </div>
+              <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-2xl font-bold text-gray-600">{{ calculateParOrBetter(currentPlayer) }}</div>
+                <div class="text-sm text-gray-600">Pars+</div>
+              </div>
+              <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                <div class="text-2xl font-bold text-yellow-600">{{ calculateBogeys(currentPlayer) }}</div>
+                <div class="text-sm text-gray-600">Bogeys</div>
+              </div>
+              <div class="text-center p-4 bg-red-50 rounded-lg">
+                <div class="text-2xl font-bold text-red-600">{{ calculateDoubleBogeys(currentPlayer) }}</div>
+                <div class="text-sm text-gray-600">Double+</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- DIALOG: Course Info -->
+    @if (showCourseInfoDialog && game) {
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+           (click)="closeAllDialogs()">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+             (click)="$event.stopPropagation()">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-800">Course Information</h2>
+              <button 
+                hlmBtn
+                variant="ghost"
+                size="sm"
+                (click)="closeAllDialogs()"
+              >
+                <ng-icon name="lucideX" size="20"></ng-icon>
+              </button>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="text-sm font-medium text-gray-700">Course Name</label>
+                <div class="text-lg font-semibold text-gray-900">{{ game.courseInfo.courseName }}</div>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium text-gray-700">Club Name</label>
+                <div class="text-lg text-gray-900">{{ game.courseInfo.clubName }}</div>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium text-gray-700">Selected Tee</label>
+                <div class="text-lg text-gray-900">{{ game.courseInfo.selectedTee }}</div>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium text-gray-700">Total Holes</label>
+                <div class="text-lg text-gray-900">{{ game.numberOfHoles }}</div>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium text-gray-700">Starting Hole</label>
+                <div class="text-lg text-gray-900">{{ game.startingHole }}</div>
+              </div>
+
+              <!-- Hole Details Table -->
+              <div class="mt-6">
+                <label class="text-sm font-medium text-gray-700 mb-2 block">Hole Details</label>
+                <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                  <table class="w-full">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Hole</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">Par</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">Yardage</th>
+                        @if (game.courseInfo.holes[0]?.handicap !== undefined) {
+                          <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">Handicap</th>
+                        }
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (hole of game.courseInfo.holes; track $index) {
+                        <tr class="border-b border-gray-100 last:border-b-0">
+                          <td class="py-3 px-4 font-medium text-gray-900">{{ $index + 1 }}</td>
+                          <td class="text-center py-3 px-4 text-gray-700">{{ hole.par }}</td>
+                          <td class="text-center py-3 px-4 text-gray-700">{{ hole.yardage }}</td>
+                          @if (hole.handicap !== undefined) {
+                            <td class="text-center py-3 px-4 text-gray-700">{{ hole.handicap }}</td>
+                          }
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-2">
+              <button hlmBtn (click)="closeAllDialogs()">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- DIALOG: Score Edit -->
+    @if (showScoreDialog && selectedPlayerForScore && selectedHole) {
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+           (click)="closeScoreDialog()">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full"
+             (click)="$event.stopPropagation()">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold text-gray-800">
+                Hole {{ selectedHoleNumber }}
+              </h2>
+              <button 
+                hlmBtn
+                variant="ghost"
+                size="sm"
+                (click)="closeScoreDialog()"
+              >
+                <ng-icon name="lucideX" size="20"></ng-icon>
+              </button>
+            </div>
+
+            <div class="space-y-4 mb-6">
+              <div class="text-center">
+                <div class="text-sm text-gray-600 mb-2">{{ selectedPlayerForScore.playerName }}</div>
+                <div class="text-4xl font-bold text-gray-900 mb-2">
+                  {{ selectedHole.strokes || 0 }}
+                </div>
+                <div class="text-sm text-gray-500">
+                  Par {{ selectedHole.par }} • {{ selectedHole.yardage }} yards
+                </div>
+              </div>
+
+              <!-- Stroke Counter -->
+              <div class="flex items-center justify-center gap-4">
+                <button 
+                  hlmBtn
+                  size="lg"
+                  variant="outline"
+                  (click)="decrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
+                  [disabled]="!selectedHole.strokes || selectedHole.strokes <= 0"
+                >
+                  <ng-icon name="lucideMinus" size="24"></ng-icon>
+                </button>
+
+                <div class="text-6xl font-bold text-blue-600 min-w-[100px] text-center">
+                  {{ selectedHole.strokes || 0 }}
+                </div>
+
+                <button 
+                  hlmBtn
+                  size="lg"
+                  variant="outline"
+                  (click)="incrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
+                >
+                  <ng-icon name="lucidePlus" size="24"></ng-icon>
+                </button>
+              </div>
+
+              <!-- Quick Entry Buttons (Putts) -->
+              <div class="grid grid-cols-4 gap-2">
+                @for (score of [1, 2, 3, 4, 5, 6, 7, 8]; track score) {
+                  <button
+                    hlmBtn
+                    variant="outline"
+                    size="sm"
+                    class="h-12"
+                    (click)="setScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber, score)"
+                  >
+                    {{ score }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Hole Navigation -->
+            <div class="flex items-center justify-between border-t border-gray-200 pt-4">
+              <button 
+                hlmBtn
+                variant="outline"
+                (click)="previousHole(); updateSelectedHoleForDialog()"
+                [disabled]="selectedHoleNumber === 1"
+              >
+                <ng-icon name="lucideChevronLeft" class="mr-2" size="18"></ng-icon>
+                Hole
+              </button>
+
+              <div class="text-sm font-medium text-gray-600">
+                Hole {{ selectedHoleNumber }} of {{ game?.numberOfHoles }}
+              </div>
+
+              <button 
+                hlmBtn
+                variant="outline"
+                (click)="nextHole(); updateSelectedHoleForDialog()"
+                [disabled]="selectedHoleNumber === game?.numberOfHoles"
+              >
+                Hole
+                <ng-icon name="lucideChevronRight" class="ml-2" size="18"></ng-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- DIALOG: Add Player -->
+    @if (showAddPlayerDialog) {
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          (click)="closeAddPlayerDialog()">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            (click)="$event.stopPropagation()">
+          <app-add-player
+            [gameId]="gameId"
+            [currentUserId]="userId"
+            (close)="closeAddPlayerDialog()"
+          ></app-add-player>
+        </div>
+      </div>
+    }
+
+
+    <!-- DIALOG: Score Edit -->
+    @if (showScoreDialog && selectedPlayerForScore && selectedHole) {
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          (click)="closeScoreDialog()">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full"
+            (click)="$event.stopPropagation()">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold text-gray-800">
+                Hole {{ selectedHoleNumber }}
+              </h2>
+              <button 
+                hlmBtn
+                variant="ghost"
+                size="sm"
+                (click)="closeScoreDialog()"
+              >
+                <ng-icon name="lucideX" size="20"></ng-icon>
+              </button>
+            </div>
+
+            <div class="space-y-4 mb-6">
+              <div class="text-center">
+                <div class="text-sm text-gray-600 mb-2">{{ selectedPlayerForScore.playerName }}</div>
+                <div class="text-sm text-gray-500 mb-4">
+                  Par {{ selectedHole.par }} • {{ selectedHole.yardage }} yards
+                </div>
+              </div>
+
+              <!-- Strokes Counter -->
+              <div class="flex items-center justify-center gap-4">
+                <button 
+                  hlmBtn
+                  size="lg"
+                  variant="outline"
+                  (click)="decrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
+                  [disabled]="!selectedHole.strokes || selectedHole.strokes <= 0"
+                >
+                  <ng-icon name="lucideMinus" size="24"></ng-icon>
+                </button>
+
+                <div class="text-6xl font-bold text-blue-600 min-w-[100px] text-center">
+                  {{ selectedHole.strokes || 0 }}
+                </div>
+
+                <button 
+                  hlmBtn
+                  size="lg"
+                  variant="outline"
+                  (click)="incrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
+                >
+                  <ng-icon name="lucidePlus" size="24"></ng-icon>
+                </button>
+              </div>
+
+              <!-- Putts Counter (local only) -->
+              <div class="flex items-center justify-center gap-4">
+                <button 
+                  hlmBtn
+                  size="lg"
+                  variant="outline"
+                  (click)="decrementPutts()"
+                  [disabled]="currentPutts <= 0"
+                >
+                  <ng-icon name="lucideMinus" size="24"></ng-icon>
+                </button>
+
+                <div class="text-4xl font-bold text-green-600 min-w-[80px] text-center">
+                  {{ currentPutts }}
+                </div>
+
+                <button 
+                  hlmBtn
+                  size="lg"
+                  variant="outline"
+                  (click)="incrementPutts()"
+                >
+                  <ng-icon name="lucidePlus" size="24"></ng-icon>
+                </button>
+                <span class="text-sm text-gray-600 ml-2">Putts</span>
+              </div>
+
+              <!-- Quick Entry Buttons (Strokes) -->
+              <div class="grid grid-cols-4 gap-2">
+                @for (score of [1, 2, 3, 4, 5, 6, 7, 8]; track score) {
+                  <button
+                    hlmBtn
+                    variant="outline"
+                    size="sm"
+                    class="h-12"
+                    (click)="setScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber, score)"
+                  >
+                    {{ score }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Hole Navigation -->
+            <div class="flex items-center justify-between border-t border-gray-200 pt-4">
+              <button 
+                hlmBtn
+                variant="outline"
+                (click)="previousHole(); updateSelectedHoleForDialog()"
+                [disabled]="selectedHoleNumber === 1"
+              >
+                <ng-icon name="lucideChevronLeft" class="mr-2" size="18"></ng-icon>
+                Hole
+              </button>
+
+              <div class="text-sm font-medium text-gray-600">
+                Hole {{ selectedHoleNumber }} of {{ game?.numberOfHoles }}
+              </div>
+
+              <button 
+                hlmBtn
+                variant="outline"
+                (click)="nextHole(); updateSelectedHoleForDialog()"
+                [disabled]="selectedHoleNumber === game?.numberOfHoles"
+              >
+                Hole
+                <ng-icon name="lucideChevronRight" class="ml-2" size="18"></ng-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

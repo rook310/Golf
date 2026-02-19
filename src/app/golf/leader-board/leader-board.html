@@ -1,0 +1,237 @@
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 p-4">
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-800">Leaderboard</h1>
+          @if (game) {
+            <p class="text-gray-600 mt-2">
+              {{ game.courseInfo.courseName }} • 
+              {{ game.startDate | date:'mediumDate' }} • 
+              {{ game.numberOfHoles }} Holes
+            </p>
+          }
+        </div>
+        
+        <div class="flex gap-2">
+          <button hlmBtn variant="outline" size="sm" (click)="refresh()">
+            <ng-icon name="lucideRefreshCw" class="mr-2" size="sm" [class.animate-spin]="isLoading" />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Current Leader Highlight -->
+      @if (leaderName) {
+        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6 mb-8">
+          <div class="flex items-center">
+            <div class="bg-yellow-100 p-3 rounded-full mr-4">
+              <ng-icon name="lucideTrophy" class="text-yellow-600" size="lg" />
+            </div>
+            <div>
+              <p class="text-sm text-yellow-700 mb-1">Current Leader</p>
+              <h2 class="text-2xl font-bold text-gray-800">{{ leaderName }}</h2>
+              <div class="flex items-center mt-2">
+                <span class="text-xl font-bold text-gray-800 mr-3">Total: {{ leaderScore }}</span>
+                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 font-medium">
+                  {{ formatScoreToPar(leaderScoreToPar) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Game Completion Status -->
+      @if (game) {
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-gray-700">Game Status</span>
+            @if (isGameCompleted) {
+              <span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">
+                <ng-icon name="lucideCheck" class="mr-1" size="sm" />
+                Completed
+              </span>
+            } @else {
+              <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
+                <ng-icon name="lucidePlay" class="mr-1" size="sm" />
+                In Progress
+              </span>
+            }
+          </div>
+          <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+            @if (leaderboard.length > 0) {
+              <div 
+                class="h-full bg-green-500 transition-all duration-500" 
+                [style.width.%]="getCompletionPercentage(leaderboard[0])"
+              ></div>
+            }
+          </div>
+          <div class="text-right text-sm text-gray-500 mt-1">
+            @if (leaderboard.length > 0) {
+              {{ leaderboard[0].holesCompleted }}/{{ game.numberOfHoles }} holes completed
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="flex flex-col items-center justify-center py-12">
+        <ng-icon name="lucideRefreshCw" class="animate-spin text-gray-400 mb-4" size="lg" />
+        <p class="text-gray-600">Loading leaderboard...</p>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (errorMessage && !isLoading) {
+      <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
+        <div class="flex items-center">
+          <ng-icon name="lucideAlertCircle" class="text-red-500 mr-3" size="lg" />
+          <div>
+            <h3 class="font-bold text-red-800">Error Loading Leaderboard</h3>
+            <p class="text-red-700">{{ errorMessage }}</p>
+          </div>
+        </div>
+        <button hlmBtn variant="outline" class="mt-4" (click)="refresh()">
+          <ng-icon name="lucideRefreshCw" class="mr-2" size="sm" />
+          Try Again
+        </button>
+      </div>
+    }
+
+    <!-- Leaderboard Table -->
+    @if (!isLoading && !errorMessage && leaderboard.length > 0) {
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="overflow-x-auto">
+            <div hlmTableContainer>
+            <table hlmTable>
+                <thead hlmTHead>
+                <tr hlmTr class="bg-gray-50">
+                    <th hlmTh class="w-16 text-center">Place</th>
+                    <th hlmTh>Player</th>
+                    <th hlmTh class="text-center">Total Score</th>
+                    <th hlmTh class="text-center">To Par</th>
+                    <th hlmTh class="text-center">Holes</th>
+                    <th hlmTh class="text-center">Progress</th>
+                </tr>
+                </thead>
+                <tbody hlmTBody>
+                @for (entry of leaderboard; track entry.gamePlayerId; let i = $index) {
+                    <tr hlmTr [class]="i === 0 ? 'bg-yellow-50' : ''">
+                    <!-- Place -->
+                    <td hlmTd class="text-center">
+                        <div class="flex flex-col items-center">
+                        <span class="text-2xl font-bold text-gray-800">{{ i + 1 }}</span>
+                        <span class="text-xs text-gray-500">{{ getPositionSuffix(i + 1) }}</span>
+                        </div>
+                    </td>
+
+                    <!-- Player Name -->
+                    <td hlmTd>
+                        <div class="flex items-center">
+                        @if (i === 0) {
+                            <ng-icon name="lucideTrophy" class="text-yellow-500 mr-3" size="sm" />
+                        } @else if (i === 1) {
+                            <ng-icon name="lucideMedal" class="text-gray-400 mr-3" size="sm" />
+                        } @else if (i === 2) {
+                            <ng-icon name="lucideMedal" class="text-orange-400 mr-3" size="sm" />
+                        } @else {
+                            <ng-icon name="lucideUser" class="text-gray-400 mr-3" size="sm" />
+                        }
+                        <div>
+                            <div class="font-medium">{{ entry.playerName }}</div>
+                            <div class="text-sm text-gray-500">Current: Hole {{ entry.currentHole }}</div>
+                        </div>
+                        </div>
+                    </td>
+
+                    <!-- Total Score -->
+                    <td hlmTd class="text-center">
+                        <span class="text-2xl font-bold text-gray-800">{{ entry.totalScore }}</span>
+                    </td>
+
+                    <!-- Score to Par -->
+                    <td hlmTd class="text-center">
+                        <span [class]="{
+                        'text-green-600': entry.scoreToPar < 0,
+                        'text-red-600': entry.scoreToPar > 0,
+                        'text-gray-600': entry.scoreToPar === 0
+                        }" class="font-bold text-lg">
+                        {{ formatScoreToPar(entry.scoreToPar) }}
+                        </span>
+                    </td>
+
+                    <!-- Holes Completed -->
+                    <td hlmTd class="text-center">
+                        <div class="flex flex-col">
+                        <span class="font-medium">{{ entry.holesCompleted }}</span>
+                        <span class="text-xs text-gray-500">completed</span>
+                        </div>
+                    </td>
+
+                    <!-- Progress Bar -->
+                    <td hlmTd>
+                        <div class="px-4">
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                            class="h-full bg-green-500 transition-all duration-500"
+                            [style.width.%]="getCompletionPercentage(entry)"
+                            ></div>
+                        </div>
+                        <div class="text-xs text-gray-500 text-center mt-1">
+                            {{ getCompletionPercentage(entry) | number:'1.0-0' }}%
+                        </div>
+                        </div>
+                    </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+        </div>
+        </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading && !errorMessage && leaderboard.length === 0) {
+      <div class="bg-white rounded-xl shadow-lg p-12 text-center mb-8">
+        <ng-icon name="lucideTrophy" class="text-gray-300 mb-4" size="3xl" />
+        <h3 class="text-xl font-bold text-gray-700 mb-2">No Scores Yet</h3>
+        <p class="text-gray-500 mb-6">Players haven't started scoring yet. Check back soon!</p>
+        <button hlmBtn variant="outline" (click)="refresh()">
+          <ng-icon name="lucideRefreshCw" class="mr-2" size="sm" />
+          Refresh
+        </button>
+      </div>
+    }
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col md:flex-row gap-4 justify-between">
+      @if (gameId) {
+        <button hlmBtn variant="outline" (click)="backToScorecard()" class="flex-1">
+          <ng-icon name="lucideChevronLeft" class="mr-2" size="sm" />
+          Back to Game
+        </button>
+      }
+      
+      <button hlmBtn variant="ghost" (click)="goHome()" class="flex-1">
+        <ng-icon name="lucideHome" class="mr-2" size="sm" />
+        Home
+      </button>
+    </div>
+
+    <!-- Auto-refresh Notice -->
+    @if (!isGameCompleted) {
+      <div class="mt-8 text-center">
+        <div class="inline-flex items-center text-sm text-gray-500 bg-blue-50 px-4 py-2 rounded-full">
+          <ng-icon name="lucideRefreshCw" class="mr-2 animate-pulse" size="sm" />
+          Live updating every 5 seconds
+        </div>
+      </div>
+    }
+  </div>
+</div>
