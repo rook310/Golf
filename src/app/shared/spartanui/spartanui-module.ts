@@ -71,7 +71,8 @@ import {
   lucideFlag,
   lucideMedal ,
   lucideMinus,
-  lucideBell
+  lucideBell,
+  lucidePlay 
 } from '@ng-icons/lucide';
 
 // IMPORTANT: Use spread operator correctly
@@ -163,7 +164,8 @@ const SPARTAN_IMPORTS = [
       lucideCalendar,
       lucideFlag,
       lucideMedal,
-      lucideMinus
+      lucideMinus,
+      lucidePlay 
     })
   ]
 })
