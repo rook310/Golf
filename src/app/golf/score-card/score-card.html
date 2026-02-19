@@ -1,10 +1,10 @@
-<div class="min-h-screen bg-gradient-to-b from-green-50 to-blue-50 p-4">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-purple-50 p-4">
   <div class="max-w-7xl mx-auto">
     
     <!-- Loading State -->
     @if (isLoading) {
       <div class="flex flex-col items-center justify-center py-12">
-        <ng-icon name="lucideRefreshCw" class="animate-spin text-gray-400 mb-4" size="32"></ng-icon>
+        <ng-icon hlm name="lucideRefreshCw" class="animate-spin text-gray-400 mb-4" size="lg"></ng-icon>
         <p class="text-gray-600">Loading scorecard...</p>
       </div>
     }
@@ -13,15 +13,17 @@
     @if (errorMessage && !isLoading) {
       <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
         <div class="flex items-center">
-          <ng-icon name="lucideAlertCircle" class="text-red-500 mr-2" size="20"></ng-icon>
+          <ng-icon hlm name="lucideAlertCircle" class="text-red-500 mr-2" size="sm"></ng-icon>
           <span class="text-red-700">{{ errorMessage }}</span>
         </div>
       </div>
     }
 
-    <!-- SCREEN 1: Course Info Screen (Initial View) -->
+    <!--  -->
+    <!-- SCREEN 1: Course Info Screen -->
+     <!--  -->
     @if (game && !isLoading && !showMainScorecard) {
-      <div class="bg-white rounded-xl shadow-lg p-6 max-w-2xl mx-auto">
+      <div class="bg-white rounded-xl border border-blue-100 shadow-xl p-6 max-w-2xl mx-auto">
         
         <!-- Header with Close -->
         <div class="flex justify-between items-center mb-6">
@@ -32,7 +34,7 @@
             size="sm"
             (click)="goHome()"
           >
-            <ng-icon name="lucideX" size="20"></ng-icon>
+            <ng-icon hlm name="lucideX" size="sm"></ng-icon>
           </button>
         </div>
 
@@ -81,7 +83,7 @@
                     <td class="py-3 px-4">
                       <div class="flex items-center gap-2">
                         <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                          <ng-icon name="lucideUser" class="text-blue-600" size="16"></ng-icon>
+                          <ng-icon hlm name="lucideUser" class="text-blue-600" size="sm"></ng-icon>
                         </div>
                         <div>
                           <div class="font-medium text-gray-800">{{ player.playerName }}</div>
@@ -129,7 +131,7 @@
             class="w-full"
             (click)="openAddPlayerDialog()"
           >
-            <ng-icon name="lucidePlus" class="mr-2" size="18"></ng-icon>
+            <ng-icon hlm name="lucidePlus" class="mr-2" size="sm"></ng-icon>
             Add Player
           </button>
         </div>
@@ -144,7 +146,11 @@
           >
             Scorecard
           </button>
-          <button hlmBtn class="flex-1" (click)="openScoreDialogForCurrentPlayer()">
+          <button 
+            hlmBtn 
+            class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700" 
+            (click)="openScoreDialogForCurrentPlayer()"
+          >
             AddScore
           </button>
         </div>
@@ -155,7 +161,7 @@
             variant="ghost"
             (click)="goHome()"
           >
-            <ng-icon name="lucideHome" class="mr-2" size="18"></ng-icon>
+            <ng-icon hlm name="lucideHome" class="mr-2" size="sm"></ng-icon>
             Home
           </button>
           <button 
@@ -163,16 +169,17 @@
             variant="ghost"
             (click)="viewLeaderboard()"
           >
-            <ng-icon name="lucideTrophy" class="mr-2" size="18"></ng-icon>
+            <ng-icon hlm name="lucideTrophy" class="mr-2" size="sm"></ng-icon>
             Leader
           </button>
         </div>
       </div>
     }
-
+    <!--  -->
     <!-- SCREEN 2: Main Scorecard (After clicking Scorecard/AddScore) -->
+    <!--  -->
     @if (game && !isLoading && showMainScorecard) {
-      <div class="bg-white rounded-xl shadow-lg p-6" style="overflow-x: hidden; width: 100%;">
+      <div class="bg-white rounded-xl border border-blue-100 shadow-xl p-6" style="overflow-x: hidden; width: 100%;">
         
         <!-- Header -->
         <div class="flex justify-between items-start mb-6">
@@ -185,21 +192,21 @@
                 size="sm"
                 (click)="openCourseInfoDialog()"
               >
-                <ng-icon name="lucideInfo" size="18"></ng-icon>
+                <ng-icon hlm name="lucideInfo" size="sm"></ng-icon>
               </button>
             </div>
             
             <div class="flex flex-wrap gap-4 text-sm text-gray-600">
               <div class="flex items-center">
-                <ng-icon name="lucideCalendar" class="mr-1" size="14"></ng-icon>
+                <ng-icon hlm name="lucideCalendar" class="mr-1" size="sm"></ng-icon>
                 {{ game.createdAt | date:'mediumDate' }}
               </div>
               <div class="flex items-center">
-                <ng-icon name="lucideFlag" class="mr-1" size="14"></ng-icon>
+                <ng-icon hlm name="lucideFlag" class="mr-1" size="sm"></ng-icon>
                 {{ game.numberOfHoles }} Holes
               </div>
               <div class="flex items-center">
-                <ng-icon name="lucideUsers" class="mr-1" size="14"></ng-icon>
+                <ng-icon hlm name="lucideUsers" class="mr-1" size="sm"></ng-icon>
                 {{ game.players.length }} Players
               </div>
             </div>
@@ -207,15 +214,15 @@
 
           <div class="flex gap-2">
             <button hlmBtn variant="outline" (click)="viewLeaderboard()">
-              <ng-icon name="lucideTrophy" class="mr-2" size="18"></ng-icon>
+              <ng-icon hlm name="lucideTrophy" class="mr-2" size="sm"></ng-icon>
               Leader
             </button>
             <button hlmBtn variant="ghost" (click)="showMainScorecard = false">
-              <ng-icon name="lucideArrowLeft" size="18"></ng-icon>
+              <ng-icon hlm name="lucideArrowLeft" size="sm"></ng-icon>
               Back
             </button>
             <button hlmBtn variant="ghost" (click)="goHome()">
-              <ng-icon name="lucideHome" size="18"></ng-icon>
+              <ng-icon hlm name="lucideHome" size="sm"></ng-icon>
             </button>
           </div>
         </div>
@@ -260,7 +267,7 @@
                   <td class="py-3 px-4">
                     <div class="flex items-center gap-2">
                       <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                        <ng-icon name="lucideUser" class="text-blue-600" size="16"></ng-icon>
+                        <ng-icon hlm name="lucideUser" class="text-blue-600" size="sm"></ng-icon>
                       </div>
                       <div>
                         <div class="font-medium text-gray-800">{{ player.playerName }}</div>
@@ -333,11 +340,15 @@
       </div>
     }
 
+    <!--  -->
+    <!-- Dialog Boxes -->
+     <!--  -->
+
     <!-- DIALOG: Course Info -->
     @if (showCourseInfoDialog && game) {
       <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
            (click)="closeAllDialogs()">
-        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
              (click)="$event.stopPropagation()">
           <div class="p-6">
             <div class="flex justify-between items-center mb-6">
@@ -348,7 +359,7 @@
                 size="sm"
                 (click)="closeAllDialogs()"
               >
-                <ng-icon name="lucideX" size="20"></ng-icon>
+                <ng-icon hlm name="lucideX" size="sm"></ng-icon>
               </button>
             </div>
 
@@ -411,7 +422,7 @@
             </div>
 
             <div class="mt-6 flex justify-end gap-2">
-              <button hlmBtn (click)="closeAllDialogs()">
+              <button hlmBtn class="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700" (click)="closeAllDialogs()">
                 Close
               </button>
             </div>
@@ -420,11 +431,11 @@
       </div>
     }
 
-    <!-- DIALOG: Score Edit -->
+    <!-- DIALOG: Score Edit (first occurrence) -->
     @if (showScoreDialog && selectedPlayerForScore && selectedHole) {
       <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
            (click)="closeScoreDialog()">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full"
+        <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-md w-full"
              (click)="$event.stopPropagation()">
           <div class="p-6">
             <div class="flex justify-between items-center mb-6">
@@ -437,7 +448,7 @@
                 size="sm"
                 (click)="closeScoreDialog()"
               >
-                <ng-icon name="lucideX" size="20"></ng-icon>
+                <ng-icon hlm name="lucideX" size="sm"></ng-icon>
               </button>
             </div>
 
@@ -461,7 +472,7 @@
                   (click)="decrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
                   [disabled]="!selectedHole.strokes || selectedHole.strokes <= 0"
                 >
-                  <ng-icon name="lucideMinus" size="24"></ng-icon>
+                  <ng-icon hlm name="lucideMinus" size="lg"></ng-icon>
                 </button>
 
                 <div class="text-6xl font-bold text-blue-600 min-w-[100px] text-center">
@@ -474,7 +485,7 @@
                   variant="outline"
                   (click)="incrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
                 >
-                  <ng-icon name="lucidePlus" size="24"></ng-icon>
+                  <ng-icon hlm name="lucidePlus" size="lg"></ng-icon>
                 </button>
               </div>
 
@@ -502,7 +513,7 @@
                 (click)="previousHole(); updateSelectedHoleForDialog()"
                 [disabled]="selectedHoleNumber === 1"
               >
-                <ng-icon name="lucideChevronLeft" class="mr-2" size="18"></ng-icon>
+                <ng-icon hlm name="lucideChevronLeft" class="mr-2" size="sm"></ng-icon>
                 Hole
               </button>
 
@@ -517,19 +528,20 @@
                 [disabled]="selectedHoleNumber === game?.numberOfHoles"
               >
                 Hole
-                <ng-icon name="lucideChevronRight" class="ml-2" size="18"></ng-icon>
+                <ng-icon hlm name="lucideChevronRight" class="ml-2" size="sm"></ng-icon>
               </button>
             </div>
           </div>
         </div>
       </div>
     }
+    
 
     <!-- DIALOG: Add Player -->
     @if (showAddPlayerDialog) {
       <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
           (click)="closeAddPlayerDialog()">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
             (click)="$event.stopPropagation()">
           <app-add-player
             [gameId]="gameId"
@@ -540,12 +552,11 @@
       </div>
     }
 
-
-    <!-- DIALOG: Score Edit -->
+    <!-- DIALOG: Score Edit (second occurrence, possibly duplicate) -->
     @if (showScoreDialog && selectedPlayerForScore && selectedHole) {
       <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
           (click)="closeScoreDialog()">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full"
+        <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-md w-full"
             (click)="$event.stopPropagation()">
           <div class="p-6">
             <div class="flex justify-between items-center mb-6">
@@ -558,7 +569,7 @@
                 size="sm"
                 (click)="closeScoreDialog()"
               >
-                <ng-icon name="lucideX" size="20"></ng-icon>
+                <ng-icon hlm name="lucideX" size="sm"></ng-icon>
               </button>
             </div>
 
@@ -579,7 +590,7 @@
                   (click)="decrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
                   [disabled]="!selectedHole.strokes || selectedHole.strokes <= 0"
                 >
-                  <ng-icon name="lucideMinus" size="24"></ng-icon>
+                  <ng-icon hlm name="lucideMinus" size="lg"></ng-icon>
                 </button>
 
                 <div class="text-6xl font-bold text-blue-600 min-w-[100px] text-center">
@@ -592,7 +603,7 @@
                   variant="outline"
                   (click)="incrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
                 >
-                  <ng-icon name="lucidePlus" size="24"></ng-icon>
+                  <ng-icon hlm name="lucidePlus" size="lg"></ng-icon>
                 </button>
               </div>
 
@@ -605,7 +616,7 @@
                   (click)="decrementPutts()"
                   [disabled]="currentPutts <= 0"
                 >
-                  <ng-icon name="lucideMinus" size="24"></ng-icon>
+                  <ng-icon hlm name="lucideMinus" size="lg"></ng-icon>
                 </button>
 
                 <div class="text-4xl font-bold text-green-600 min-w-[80px] text-center">
@@ -618,7 +629,7 @@
                   variant="outline"
                   (click)="incrementPutts()"
                 >
-                  <ng-icon name="lucidePlus" size="24"></ng-icon>
+                  <ng-icon hlm name="lucidePlus" size="lg"></ng-icon>
                 </button>
                 <span class="text-sm text-gray-600 ml-2">Putts</span>
               </div>
@@ -647,7 +658,7 @@
                 (click)="previousHole(); updateSelectedHoleForDialog()"
                 [disabled]="selectedHoleNumber === 1"
               >
-                <ng-icon name="lucideChevronLeft" class="mr-2" size="18"></ng-icon>
+                <ng-icon hlm name="lucideChevronLeft" class="mr-2" size="sm"></ng-icon>
                 Hole
               </button>
 
@@ -662,7 +673,7 @@
                 [disabled]="selectedHoleNumber === game?.numberOfHoles"
               >
                 Hole
-                <ng-icon name="lucideChevronRight" class="ml-2" size="18"></ng-icon>
+                <ng-icon hlm name="lucideChevronRight" class="ml-2" size="sm"></ng-icon>
               </button>
             </div>
           </div>
