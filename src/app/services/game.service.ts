@@ -630,6 +630,10 @@ export class GameService {
     };
   }
 
+  //
+  //Generate ID's
+  //
+
   // Generate unique game ID
   private generateGameId(): string {
     return `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

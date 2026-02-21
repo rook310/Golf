@@ -169,6 +169,7 @@ export class ScoreCard {
     console.log('[ScorecardComponent] Closing score dialog');
     this.showScoreDialog = false;
     this.selectedPlayerForScore = null;
+    this.puttsMap.clear();
   }
 
   /**
@@ -448,14 +449,22 @@ export class ScoreCard {
       strokes: strokes
     };
     
-    console.log('[ScorecardComponent] Update score data:', updateData);
-    
     try {
       await this.gameService.updateScore(updateData);
       console.log('[ScorecardComponent] Score updated successfully via service');
       
       // Reload game to get updated data
       await this.loadGame(true);
+
+      // If the score dialog is still open, refresh the selected player reference
+      if (this.showScoreDialog && this.selectedPlayerForScore) {
+        // Find the updated player in the fresh game data
+        const updatedPlayer = this.game?.players.find(p => p.gamePlayerId === gamePlayerId);
+        if (updatedPlayer) {
+          this.selectedPlayerForScore = updatedPlayer;
+        }
+      }
+      
       this.cdr.detectChanges();
       
     } catch (error) {

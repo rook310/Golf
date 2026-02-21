@@ -98,6 +98,30 @@
         </div>
       }
 
+      <!-- why not call both and then just display the one that matter at the time -->
+       <!-- that is a hard solution for a quick tech fix this will be part of tech debt -->
+      @if(selectedCourse && availableTees.length > 0){
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Tee Gender Selection</label>
+          <div class="flex space-x-4">
+            <button 
+              [class]="Gender === true ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+              class="flex-1 py-3 rounded-lg font-medium transition-colors"
+              (click)="toggleGender(true)"
+            >
+              Male
+            </button>
+            <button 
+              [class]="Gender === false ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+              class="flex-1 py-3 rounded-lg font-medium transition-colors"
+              (click)="toggleGender(false)"
+            >
+              Female
+            </button>
+          </div>
+        </div>
+      }
+
       <!-- Tee Selection -->
       @if (selectedCourse && availableTees.length > 0) {
         <div class="mb-6">
@@ -160,68 +184,32 @@
           <!-- Starting Hole Selection -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Select Starting Hole</label>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-              @if (numberOfHoles === 18) {
-                <button 
-                  [class]="startingHole === 1 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                  class="py-2 rounded-lg font-medium transition-colors"
-                  (click)="updateStartingHole(1)"
-                >
-                  Hole 1
-                </button>
-                <button 
-                  [class]="startingHole === 10 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                  class="py-2 rounded-lg font-medium transition-colors"
-                  (click)="updateStartingHole(10)"
-                >
-                  Hole 10
-                </button>
-                <button 
-                  [class]="startingHole === 1 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                  class="py-2 rounded-lg font-medium transition-colors"
-                  (click)="updateStartingHole(1)"
-                >
-                  Front 9
-                </button>
-                <button 
-                  [class]="startingHole === 10 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                  class="py-2 rounded-lg font-medium transition-colors"
-                  (click)="updateStartingHole(10)"
-                >
-                  Back 9
-                </button>
-              } @else {
-                <button 
-                  [class]="startingHole === 1 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                  class="py-2 rounded-lg font-medium transition-colors"
-                  (click)="updateStartingHole(1)"
-                >
-                  Front 9
-                </button>
-                <button 
-                  [class]="startingHole === 10 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                  class="py-2 rounded-lg font-medium transition-colors"
-                  (click)="updateStartingHole(10)"
-                >
-                  Back 9
-                </button>
+            <select 
+              class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              [(ngModel)]="startingHole"
+              (ngModelChange)="updateStartingHole($event)"
+            >
+              @for (hole of getStartingHoles(); track hole) {
+                <option [value]="hole">Hole {{ hole }}</option>
               }
-            </div>
+            </select>
           </div>
         </div>
       }
 
       <!-- Start Date -->
       @if (selectedCourse) {
-        <div class="grid gap-2">
-            <label hlmLabel for="date">Game Date</label>
-            <input
-              hlmInput
-              id="date"
-              type="date"
-              formControlName="startDate"
-            />
-        </div>
+        <div [formGroup]="gameForm">  
+          <div class="grid gap-2">
+              <label hlmLabel for="date">Game Date</label>
+              <input
+                hlmInput
+                id="date"
+                type="date"
+                formControlName="startDate"
+              />
+          </div>
+        </div> 
       }
 
       <!-- Continue Button -->

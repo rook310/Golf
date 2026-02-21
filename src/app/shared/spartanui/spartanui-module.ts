@@ -19,6 +19,8 @@ import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { HlmSelectTrigger, HlmSelectOption } from "@spartan-ng/helm/select";
 import { BrnSelectValue, BrnSelectContent } from "@spartan-ng/brain/select";
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
+import { HlmTabsImports } from '@spartan-ng/helm/tabs';
+
 import {
   lucideAlignCenter,
   lucideAlignJustify,
@@ -89,7 +91,8 @@ const SPARTAN_IMPORTS = [
   ...HlmTableImports,
   ...BrnSelectImports,
   ...HlmSelectImports,
-  ...HlmDialogImports
+  ...HlmDialogImports,
+  ...HlmTabsImports
 ];
 
 @NgModule({

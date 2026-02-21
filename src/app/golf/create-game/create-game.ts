@@ -41,6 +41,9 @@ export class CreateGame {
   searchResults: GolfCourse[] = [];
   selectedCourse: GolfCourse | null = null;
   isSearching: boolean = false;
+
+  genderTab: 'Male' | 'Female' = 'Male';   // default to Male
+  Gender: boolean = true; // true male false female
   
   // Tee Selection
   availableTees: string[] = [];
@@ -183,8 +186,10 @@ export class CreateGame {
     console.log('[CreateGame] Course selected:', course.course_name);
     console.log('[CreateGame] Club:', course.club_name);
     console.log('[CreateGame] ID:', course.id);
+    console.log('[CreateGame] Gender:', this.Gender);
     
     this.selectedCourse = course;
+    
     
     // Clear search results
     this.searchResults = [];
@@ -196,9 +201,11 @@ export class CreateGame {
     });
     
     console.log('[CreateGame] Form updated');
+
+    this.genderTab = this.Gender ? 'Male' : 'Female';
     
     // Get available tees
-    this.availableTees = this.golfApi.getTeeNames(course, true);
+    this.availableTees = this.golfApi.getTeeNames(course, this.Gender);//true male: false female
     console.log('[CreateGame] Available tees:', this.availableTees);
     
     // Auto-select first tee
@@ -227,6 +234,42 @@ export class CreateGame {
   //
   // Tee Selection
   //
+
+  getStartingHoles(): number[] {
+    const maxHole = this.numberOfHoles === 18 ? 18 : 9;
+    return Array.from({ length: maxHole }, (_, i) => i + 1);
+  }
+
+  onTabChange(tabId: string): void {
+    this.toggleGender(tabId === 'Male');
+  }
+
+  toggleGender(isMale: boolean): void {
+    this.Gender = isMale;
+    console.log('[CreateGame] Gender toggled:', this.Gender);
+
+    if (this.selectedCourse) {
+      // Refresh available tees based on new gender
+      this.availableTees = this.golfApi.getTeeNames(this.selectedCourse, this.Gender);
+      console.log('[CreateGame] Available tees after gender change:', this.availableTees);
+
+      // Auto-select first tee (or keep previous if still available)
+      if (this.availableTees.length > 0) {
+        const previousTee = this.selectedTee;
+        if (previousTee && this.availableTees.includes(previousTee)) {
+          // Keep the same tee – but you might want to re-select it to update holes?
+          // Optionally call selectTee(previousTee) to reload holes for that tee
+          this.selectTee(previousTee);
+        } else {
+          this.selectTee(this.availableTees[0]);
+        }
+      } else {
+        this.selectedTee = '';
+        this.selectedHoles = [];
+        this.gameForm.patchValue({ teeName: '' });
+      }
+    }
+  }
 
   selectTee(teeName: string): void {
     console.log('[CreateGame] Tee selected:', teeName);

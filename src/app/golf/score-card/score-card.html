@@ -346,7 +346,7 @@
 
     <!-- DIALOG: Course Info -->
     @if (showCourseInfoDialog && game) {
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      <div class="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center z-50 p-4"
            (click)="closeAllDialogs()">
         <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
              (click)="$event.stopPropagation()">
@@ -429,117 +429,11 @@
           </div>
         </div>
       </div>
-    }
-
-    <!-- DIALOG: Score Edit (first occurrence) -->
-    @if (showScoreDialog && selectedPlayerForScore && selectedHole) {
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-           (click)="closeScoreDialog()">
-        <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-md w-full"
-             (click)="$event.stopPropagation()">
-          <div class="p-6">
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-xl font-bold text-gray-800">
-                Hole {{ selectedHoleNumber }}
-              </h2>
-              <button 
-                hlmBtn
-                variant="ghost"
-                size="sm"
-                (click)="closeScoreDialog()"
-              >
-                <ng-icon hlm name="lucideX" size="sm"></ng-icon>
-              </button>
-            </div>
-
-            <div class="space-y-4 mb-6">
-              <div class="text-center">
-                <div class="text-sm text-gray-600 mb-2">{{ selectedPlayerForScore.playerName }}</div>
-                <div class="text-4xl font-bold text-gray-900 mb-2">
-                  {{ selectedHole.strokes || 0 }}
-                </div>
-                <div class="text-sm text-gray-500">
-                  Par {{ selectedHole.par }} • {{ selectedHole.yardage }} yards
-                </div>
-              </div>
-
-              <!-- Stroke Counter -->
-              <div class="flex items-center justify-center gap-4">
-                <button 
-                  hlmBtn
-                  size="lg"
-                  variant="outline"
-                  (click)="decrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
-                  [disabled]="!selectedHole.strokes || selectedHole.strokes <= 0"
-                >
-                  <ng-icon hlm name="lucideMinus" size="lg"></ng-icon>
-                </button>
-
-                <div class="text-6xl font-bold text-blue-600 min-w-[100px] text-center">
-                  {{ selectedHole.strokes || 0 }}
-                </div>
-
-                <button 
-                  hlmBtn
-                  size="lg"
-                  variant="outline"
-                  (click)="incrementScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber)"
-                >
-                  <ng-icon hlm name="lucidePlus" size="lg"></ng-icon>
-                </button>
-              </div>
-
-              <!-- Quick Entry Buttons (Putts) -->
-              <div class="grid grid-cols-4 gap-2">
-                @for (score of [1, 2, 3, 4, 5, 6, 7, 8]; track score) {
-                  <button
-                    hlmBtn
-                    variant="outline"
-                    size="sm"
-                    class="h-12"
-                    (click)="setScoreForPlayer(selectedPlayerForScore.gamePlayerId, selectedHoleNumber, score)"
-                  >
-                    {{ score }}
-                  </button>
-                }
-              </div>
-            </div>
-
-            <!-- Hole Navigation -->
-            <div class="flex items-center justify-between border-t border-gray-200 pt-4">
-              <button 
-                hlmBtn
-                variant="outline"
-                (click)="previousHole(); updateSelectedHoleForDialog()"
-                [disabled]="selectedHoleNumber === 1"
-              >
-                <ng-icon hlm name="lucideChevronLeft" class="mr-2" size="sm"></ng-icon>
-                Hole
-              </button>
-
-              <div class="text-sm font-medium text-gray-600">
-                Hole {{ selectedHoleNumber }} of {{ game?.numberOfHoles }}
-              </div>
-
-              <button 
-                hlmBtn
-                variant="outline"
-                (click)="nextHole(); updateSelectedHoleForDialog()"
-                [disabled]="selectedHoleNumber === game?.numberOfHoles"
-              >
-                Hole
-                <ng-icon hlm name="lucideChevronRight" class="ml-2" size="sm"></ng-icon>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    }
-    
+    }    
 
     <!-- DIALOG: Add Player -->
     @if (showAddPlayerDialog) {
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4"
           (click)="closeAddPlayerDialog()">
         <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
             (click)="$event.stopPropagation()">
@@ -554,7 +448,7 @@
 
     <!-- DIALOG: Score Edit (second occurrence, possibly duplicate) -->
     @if (showScoreDialog && selectedPlayerForScore && selectedHole) {
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      <div class="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center z-50 p-4"
           (click)="closeScoreDialog()">
         <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-md w-full"
             (click)="$event.stopPropagation()">
