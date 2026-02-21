@@ -311,13 +311,20 @@ export class GameService {
     console.log('[GameService] Adding player to game:', playerData.gameId);
     console.log('[GameService] Player name:', playerData.playerName);
     
+    
+
     try {
       const game = await this.getGameById(playerData.gameId);
-      
+
       if (!game) {
         console.error('[GameService] Game not found:', playerData.gameId);
         throw new Error('Game not found');
       }
+      
+      if (game.players.length >= 4) {
+          console.error('[GameService] too many players:', game.players.length);
+          throw new Error('Too many players');
+      }        
       
       console.log('[GameService] Current players:', game.players.length);
       
@@ -366,6 +373,8 @@ export class GameService {
       throw error;
     }
   }
+
+
 
   //
   // Score Management Methods

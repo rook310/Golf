@@ -33,9 +33,11 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               {
-                "glob": "**/*",
-                "input": "public"
-              }
+                "glob": "*/",
+                "input": "src/assets",
+                "output": "assets"
+              },
+              "src/assets"
             ],
             "styles": [
               "src/styles.css"
