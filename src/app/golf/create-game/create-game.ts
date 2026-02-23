@@ -236,8 +236,7 @@ export class CreateGame {
   //
 
   getStartingHoles(): number[] {
-    const maxHole = this.numberOfHoles === 18 ? 18 : 9;
-    return Array.from({ length: maxHole }, (_, i) => i + 1);
+    return Array.from({ length: 18 }, (_, i) => i + 1);
   }
 
   onTabChange(tabId: string): void {
