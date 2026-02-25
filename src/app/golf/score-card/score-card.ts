@@ -338,9 +338,19 @@ export class ScoreCard {
    */
   get playedHoles() {
     if (!this.game) return [];
-    const start = this.game.startingHole - 1;          // zero‑based index
+
+    const holes = this.game.courseInfo.holes;
+    const startIndex = this.game.startingHole - 1;
     const count = this.game.numberOfHoles;
-    return this.game.courseInfo.holes.slice(start, start + count);
+
+    const result = [];
+
+    for (let i = 0; i < count; i++) {
+      const index = (startIndex + i) % holes.length;
+      result.push(holes[index]);
+    }
+
+    return result;
   }
 
   /**

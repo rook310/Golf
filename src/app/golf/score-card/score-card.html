@@ -41,7 +41,7 @@
         <!-- Course Details -->
         <div class="space-y-4 mb-6">
           <div>
-            <div class="text-sm text-gray-600">Date created - {{ game.numberOfHoles }} holes - {{ game.players.length }} players</div>
+            <div class="text-sm text-gray-600">Date created: {{ game.startDate | date:'mediumDate' }} - {{ game.numberOfHoles }} holes - {{ game.players.length }} players</div>
           </div>
 
           <!-- Course Info Table -->
@@ -50,9 +50,14 @@
               <thead class="bg-gray-50">
                 <tr>
                   <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Holes</th>
-                  @for (hole of playedHoles; track $index) {
+                  @for (hole of playedHoles; track $index) 
+                  {
                     <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">
-                      {{ game.startingHole + $index }}
+                      @if (game.startingHole + $index > 18) {
+                        {{ (game.startingHole + $index) - 18 }}
+                      } @else {
+                        {{ game.startingHole + $index }}
+                      }
                     </th>
                   }
                   <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">Total</th>
@@ -346,7 +351,7 @@
 
     <!-- DIALOG: Course Info -->
     @if (showCourseInfoDialog && game) {
-      <div class="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center z-50 p-4"
+      <div class="fixed inset-0 bg-gray-900 bg-opacity-5 flex items-center justify-center z-50 p-4"
            (click)="closeAllDialogs()">
         <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
              (click)="$event.stopPropagation()">
@@ -433,7 +438,7 @@
 
     <!-- DIALOG: Add Player -->
     @if (showAddPlayerDialog) {
-      <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4"
+      <div class="fixed inset-0 bg-gray-900 bg-opacity-5 flex items-center justify-center z-50 p-4"
           (click)="closeAddPlayerDialog()">
         <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
             (click)="$event.stopPropagation()">
@@ -448,7 +453,7 @@
 
     <!-- DIALOG: Score Edit (second occurrence, possibly duplicate) -->
     @if (showScoreDialog && selectedPlayerForScore && selectedHole) {
-      <div class="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center z-50 p-4"
+      <div class="fixed inset-0 bg-gray-900 bg-opacity-5 flex items-center justify-center z-50 p-4"
           (click)="closeScoreDialog()">
         <div class="bg-white rounded-xl border border-blue-100 shadow-xl max-w-md w-full"
             (click)="$event.stopPropagation()">

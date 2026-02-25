@@ -29,6 +29,9 @@ export class GameInvite implements OnInit, OnDestroy {
   selectedInvitation: GameInvitation | null = null;
   isListMode = false;
 
+  // Cache for multiple games (for invitation list)
+  gamesCache: Map<string, Game> = new Map();
+
   selectedCourse: GolfCourse | null = null;
   
 
@@ -147,13 +150,40 @@ export class GameInvite implements OnInit, OnDestroy {
     try {
       this.pendingInvitations = await this.gameInvitationService.getPendingInvitations(this.userId);
       console.log('[GameInvitationComponent] Pending invitations loaded, count:', this.pendingInvitations.length);
+      
+      // Load all games for the invitations into cache
+      const gameLoadPromises = this.pendingInvitations.map(async (invitation) => {
+        const gameId = invitation.gameId;
+        
+        // Load game data
+        return new Promise<void>((resolve) => {
+          this.gameService.getGame(gameId).subscribe({
+            next: (game) => {
+              if (game) {
+                console.log('[GameInvitationComponent] Loaded game into cache:', gameId);
+                this.gamesCache.set(gameId, game);
+              }
+              resolve();
+            },
+            error: (error) => {
+              console.error('[GameInvitationComponent] Error loading game:', gameId, error);
+              resolve(); // Don't fail the whole operation
+            }
+          });
+        });
+      });
+      
+      // Wait for all games to load
+      await Promise.all(gameLoadPromises);
+      console.log('[GameInvitationComponent] All games loaded, cache size:', this.gamesCache.size);
+      
     } catch (error) {
       console.error('[GameInvitationComponent] Error loading invitations:', error);
       this.errorMessage = 'Failed to load invitations.';
     } finally {
       this.isLoading = false;
       this.cdr.detectChanges();
-        console.log('[GameInvitationComponent] isLoading set to false, pending invitations:', this.pendingInvitations.length);
+      console.log('[GameInvitationComponent] isLoading set to false, pending invitations:', this.pendingInvitations.length);
     }
   }
 
@@ -333,20 +363,32 @@ export class GameInvite implements OnInit, OnDestroy {
   }
 
   getCourseByGameId(gameId: string): string | null {
-    console.log('[GameInvitationComponent] getGameById called with gameId:', gameId);
+    // Check cache first
+    const cachedGame = this.gamesCache.get(gameId);
+    if (cachedGame) {
+      return cachedGame.courseInfo.courseName;
+    }
+    
+    // Fallback to this.game if it matches
     if (this.game && this.game.gameId === gameId) {
-      console.log('[GameInvitationComponent] Game found:', this.game);
       return this.game.courseInfo.courseName;
     }
+    
     return null;
   }
 
   getHolesByGameId(gameId: string): number | null {
-    console.log('[GameInvitationComponent] getGameById called with gameId:', gameId);
+    // Check cache first
+    const cachedGame = this.gamesCache.get(gameId);
+    if (cachedGame) {
+      return cachedGame.numberOfHoles; // Use numberOfHoles, not holes.length
+    }
+    
+    // Fallback to this.game if it matches
     if (this.game && this.game.gameId === gameId) {
-      console.log('[GameInvitationComponent] Game found:', this.game);
       return this.game.numberOfHoles;
     }
+    
     return null;
   }
 

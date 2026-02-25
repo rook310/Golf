@@ -582,14 +582,17 @@ export class GameService {
   // Initialize hole scores array for new player
   private initializeHoleScores(
     courseHoles: any[],
-    numberOfHoles: number,
-    startingHole: number
+    numberOfHoles: number,//
+    startingHole: number//
   ): PlayerHoleScore[] {
     console.log('[GameService] Initializing hole scores');
     console.log('[GameService] Holes:', numberOfHoles, 'Starting:', startingHole);
     const holeScores: PlayerHoleScore[] = [];
 
     for (let i = 0; i < numberOfHoles; i++) {
+      if(startingHole > 18) {
+        startingHole = 1;
+      }
       const holeNumber = ((startingHole - 1 + i) % 18) + 1;
       const courseHole = courseHoles[holeNumber - 1];
       

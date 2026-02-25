@@ -38,9 +38,7 @@
                 [(ngModel)]="searchQuery"
                 class="w-full"
               />
-              @if (isSearching) {
-                <ng-icon hlm name="lucideRefreshCw" hlmInputGroup class="animate-spin" />
-              }
+              
             </hlm-input-group>
             
             <!-- 🔍 Search button -->
@@ -209,6 +207,7 @@
                 type="date"
                 formControlName="startDate"
               />
+              <!--  -->
           </div>
         </div> 
       }
@@ -414,100 +413,6 @@
               {{ invitedPlayers.length > 0 ? 'Start Game & Send Invites' : 'Start Game' }}
             }
           </button>
-        </div>
-      </div>
-    }
-
-    <!---->
-    <!-- Game Summary -->
-    <!---->
-    @if (selectedCourse) {
-      <div class="bg-white rounded-xl border border-blue-100 shadow-xl p-6">
-        <div class="flex items-center mb-6">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white flex items-center justify-center font-bold mr-3">3</div>
-          <h2 class="text-2xl font-bold text-gray-800">Game Summary</h2>
-        </div>
-
-        <!-- Game Details -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div class="space-y-4">
-            <div>
-              <p class="text-sm text-gray-500">Course</p>
-              <p class="font-bold text-lg">{{ selectedCourse.course_name }}</p>
-              <p class="text-gray-600">{{ selectedCourse.club_name }}</p>
-            </div>
-            
-            <div>
-              <p class="text-sm text-gray-500">Tee Box</p>
-              <p class="font-bold text-lg">{{ selectedTee }}</p>
-            </div>
-            
-            <div>
-              <p class="text-sm text-gray-500">Round</p>
-              <p class="font-bold text-lg">{{ numberOfHoles }} Holes</p>
-              <p class="text-gray-600">Starting at Hole {{ startingHole }}</p>
-            </div>
-          </div>
-          
-          <div class="space-y-4">
-            <div>
-              <p class="text-sm text-gray-500">Date</p>
-              <p class="font-bold text-lg">{{ gameForm.get('startDate')?.value | date:'mediumDate' }}</p>
-            </div>
-            
-            <div>
-              <p class="text-sm text-gray-500">Players</p>
-              <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                  <ng-icon hlm name="lucideUser" class="text-blue-600" size="sm" />
-                </div>
-                <div>
-                  <p class="font-bold">{{ gameForm.get('playerName')?.value || 'You' }}</p>
-                  <p class="text-sm text-gray-500">Host • {{ selectedTee }}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="pt-2">
-              <p class="text-sm text-gray-500">Ready to play?</p>
-              <p class="text-gray-600">You'll be taken to the scorecard where you can add more players</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Final Action -->
-        <div class="border-t pt-6">
-          <div class="text-center mb-6">
-            <p class="text-lg font-medium text-gray-700">All set! Ready to start your game?</p>
-            <p class="text-gray-500">Click below to go directly to the scorecard and begin playing</p>
-          </div>
-          
-          <button 
-            hlmBtn 
-            size="lg"
-            class="w-full py-6 text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
-            (click)="createGame()"
-            [disabled]="loading || !gameForm.valid"
-          >
-            @if (loading) {
-              <ng-icon hlm name="lucideRefreshCw" class="mr-3 animate-spin" size="lg" />
-              Creating Game...
-            } @else {
-              <ng-icon hlm name="lucideFlag" class="mr-3" size="lg" />
-              Start Game & Go to Scorecard
-            }
-          </button>
-          
-          <div class="mt-4 flex justify-center">
-            <button 
-              hlmBtn 
-              variant="ghost"
-              (click)="cancel()"
-            >
-              <ng-icon hlm name="lucideHome" class="mr-2" size="sm" />
-              Return to Home
-            </button>
-          </div>
         </div>
       </div>
     }
