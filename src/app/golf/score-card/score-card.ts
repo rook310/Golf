@@ -106,6 +106,14 @@ export class ScoreCard {
     console.log('[ScorecardComponent] Loading game:', this.gameId, '(silent:', silent, ')');
     if (!silent) this.isLoading = true;
 
+    if (this.currentPlayer) {
+
+      if (!this.showScoreDialog) {
+        this.selectedHoleNumber = this.currentPlayer.currentHole;
+      }
+
+    }
+
     try {
       this.gameService.getGame(this.gameId).subscribe({
         next: (data) => {
@@ -117,7 +125,11 @@ export class ScoreCard {
             }
             if (this.currentPlayer) {
               console.log('[ScorecardComponent] Current player found:', this.currentPlayer.playerName);
-              this.selectedHoleNumber = this.currentPlayer.currentHole;
+
+              // ONLY update hole if dialog is not open
+              if (!this.showScoreDialog) {
+                this.selectedHoleNumber = this.currentPlayer.currentHole;
+              }
             } else {
               console.warn('[ScorecardComponent] Current player not found in game players list');
             }

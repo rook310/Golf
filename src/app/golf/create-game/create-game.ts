@@ -14,6 +14,9 @@ import { User, PlayerEntry } from '../../models/user-model/user-module';
 import { GolfCourse, Hole } from '../../models/golf-course/golf-course-module';
 import { CreateGameData } from '../../models/game/game-module';
 
+// Unility
+import { ChangeDetectorRef } from '@angular/core';
+
 @Component({
   selector: 'app-create-game',
   standalone: false,
@@ -74,7 +77,8 @@ export class CreateGame {
     private gameService: GameService,
     private golfApi: CourseAPIService,
     private gameInviteService: GameInviteService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     console.log('[CreateGame] Component initialized');
 
@@ -141,6 +145,9 @@ export class CreateGame {
         console.log('[CreateGame] Search results:', courses.length);
         this.searchResults = courses;
         this.isSearching = false;
+
+        // reload the search results to clear old results when new search is made
+        this.cdr.detectChanges();
         
         if (courses.length === 0 && this.searchQuery.trim().length > 0) {
           this.errorMessage = 'No courses found. Try a different search term.';
