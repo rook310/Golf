@@ -64,7 +64,7 @@ export class SignUp
 
       console.log("registration succesful")
 
-      this.navigateToLogin();
+      this.navigateToHome();
 
     } catch (error: any) {
       this.errorMessage = this.getErrorMessage(error.code);
@@ -119,6 +119,10 @@ export class SignUp
 
   navigateToLogin(): void {
     this.router.navigate(['/login']);
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/home']);
   }
 
   goToForgotpassword(): void {

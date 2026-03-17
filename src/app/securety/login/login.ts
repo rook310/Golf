@@ -54,7 +54,7 @@ export class Login {
         const userId = this.authService.getCurrentUserId();
         if (userId) {
           console.log(`[Navigation] Navigating to my profile: ${userId}`);
-          this.router.navigate(['/userProfile', userId]);
+          this.router.navigate(['/home']);
         } else {
           console.warn('[Navigation] Cannot navigate to profile: no authenticated user');
           // Optional: redirect to login
