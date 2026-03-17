@@ -126,7 +126,7 @@ export class ScoreCard {
             if (this.currentPlayer) {
               console.log('[ScorecardComponent] Current player found:', this.currentPlayer.playerName);
 
-              // ONLY update hole if dialog is not open
+              // ONLY update hole if dialog is not open 
               if (!this.showScoreDialog) {
                 this.selectedHoleNumber = this.currentPlayer.currentHole;
               }
